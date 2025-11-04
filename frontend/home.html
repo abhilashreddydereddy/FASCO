@@ -14,9 +14,44 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:#111827}
 
-    .navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));backdrop-filter:blur(6px);box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:#111827;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden; /* Prevent body scroll when menu is open */
+    }
+
+    /* --- NEW/MODIFIED CSS FOR BLUR EFFECT --- */
+    body.menu-open #main-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(2px); /* Apply blur directly to main-body content */
+      z-index: 98; /* Below menu, above main-body content */
+      pointer-events: none; /* Allows clicks to pass through to the overlay */
+    }
+    /* --- END NEW/MODIFIED CSS --- */
+
+    .navbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 20px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));
+      backdrop-filter:blur(6px); /* Keep the blur for the navbar itself */
+      box-shadow:var(--shadow);
+      position:sticky;
+      top:0;
+      z-index:40;
+      flex-shrink: 0;
+    }
     .left-section{display:flex;align-items:center;gap:12px}
     .brand{display:flex;align-items:center;gap:10px}
     .logo{width:36px;height:36px;border-radius:8px;background:var(--accent);display:inline-grid;place-items:center;color:white;font-weight:700}
@@ -31,7 +66,42 @@
     .hamburger{border:0;background:none;cursor:pointer;padding:8px;border-radius:8px;display:inline-flex;flex-direction:column;justify-content:center}
     .hamburger .line{width:22px;height:2px;background:#111827;margin:3px 0;transition:transform .2s ease,opacity .2s ease}
 
-    .mobile-menu{display:none;flex-direction:column;gap:8px;padding:12px 20px;border-top:1px solid rgba(15,23,42,0.04);background:transparent}
+    .mobile-menu{
+      display: flex; 
+      flex-direction: column;
+      gap: 8px;
+      padding: 28px 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%; 
+      width: 280px;  
+      background: var(--card);
+      z-index: 100;
+      box-shadow: var(--shadow);
+      transform: translateX(-100%); 
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    
+    #menu-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; 
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      /* --- MODIFIED: Removed backdrop-filter from here --- */
+      z-index: 99;
+    }
+
+    #menu-overlay.open {
+      display: block;
+    }
+
     .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
 
     .container{max-width:1100px;margin:28px auto;padding:0 20px}
@@ -42,16 +112,35 @@
     @media (max-width:720px){
       .nav-links{display:none}
       .actions{display:none}
-      .mobile-menu{display:flex}
       .cards{grid-template-columns:1fr}
     }
 
     .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
     .hamburger.open .line:nth-child(2){opacity:0}
     .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+
+    .card-image {
+        max-width: 100%; 
+        height: auto;
+        display: block;
+        border-radius: 6px; 
+    }
+
+    #dash {
+        font-size: large;
+        color: rgb(153, 30, 30);
+    }
+
+    #main-body {
+      flex-grow: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
   </style>
 </head>
 <body>
+  
   <header class="navbar">
     <div class="left-section">
       <button class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-label="Open menu">
@@ -60,7 +149,9 @@
         <span class="line"></span>
       </button>
       <div class="brand">
-        <div class="logo">F</div>
+        <div class="logo">
+            <img class="card-image" src="assets/icons/logo.png" alt="Fasco Logo">
+        </div>
         <div>
           <h1>Fasco</h1>
           <div style="font-size:12px;color:var(--muted)">Inventory & Billing</div>
@@ -69,11 +160,9 @@
     </div>
 
     <nav class="nav-links" aria-label="Primary">
-      <a href="home.html">Dashboard</a>
-      <a href="products.html">Products</a>
-      <a href="sales.html">Sales</a>
-      <a href="#">Reports</a>
-      <a href="#">Settings</a>
+      <a id = "dash" href="home.html">Dashboard</a>
+      <a id = "inventory" href="inventory.html">Inventory</a>
+      <a id = "sales" href="sales.html">Sales</a>
     </nav>
 
     <div class="actions">
@@ -82,62 +171,64 @@
     </div>
   </header>
 
-  <div id="mobileMenu" class="mobile-menu" style="display:none">
-    <a href="home.html">Dashboard</a>
-    <a href="products.html">Products</a>
-    <a href="sales.html">Sales</a>
-    <a href="#">Reports</a>
-    <a href="#">Settings</a>
-    <div style="height:1px;background:rgba(15,23,42,0.04);margin:8px 0"></div>
-    <a href="#">Profile</a>
-    <a href="#" style="color:var(--accent);font-weight:700">New Invoice</a>
-  </div>
+  <div id="main-body">
+    <div id="menu-overlay"></div> <div id="mobileMenu" class="mobile-menu">
+      <a href="home.html">Dashboard</a>
+      <a href="inventory.html">Products</a>
+      <a href="sales.html">Sales</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </div>
 
-  <main class="container">
-    <section class="cards">
-      <div class="card">
-        <h3 style="margin-top:0">Quick Overview</h3>
-        <p style="color:var(--muted)">Placeholder metrics: total products, low stock items, today's sales.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin-top:0">Recent Sales</h3>
-        <p style="color:var(--muted)">A small table or list of recent invoices will go here.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin-top:0">Top Products</h3>
-        <p style="color:var(--muted)">Top selling items this week.</p>
-      </div>
-    </section>
-  </main>
+    <div class="container">
+      <section class="cards">
+        <div class="card">
+          <h3 style="margin-top:0">Quick Overview</h3>
+          <p style="color:var(--muted)">Placeholder metrics: total products, low stock items, today's sales.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Recent Sales</h3>
+          <p style="color:var(--muted)">A small table or list of recent invoices will go here.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Top Products</h3>
+          <p style="color:var(--muted)">Top selling items this week.</p>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script>
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('menu-overlay');
 
     function toggleMenu(){
       const open = btn.classList.toggle('open');
       const expanded = open ? 'true' : 'false';
       btn.setAttribute('aria-expanded', expanded);
-      mobileMenu.style.display = open ? 'flex' : 'none';
+      
+      mobileMenu.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      
+      // --- NEW JAVASCRIPT ---
+      document.body.classList.toggle('menu-open', open); // Toggle the class on the body
+      // --- END NEW JAVASCRIPT ---
     }
 
     btn.addEventListener('click', toggleMenu);
-
-    document.addEventListener('click', (e)=>{
-      if(window.innerWidth <= 720){
-        if(!btn.contains(e.target) && !mobileMenu.contains(e.target)){
-          btn.classList.remove('open');
-          btn.setAttribute('aria-expanded','false');
-          mobileMenu.style.display = 'none';
-        }
-      }
-    });
+    overlay.addEventListener('click', toggleMenu);
 
     window.addEventListener('resize', ()=>{
       if(window.innerWidth > 720){
-        mobileMenu.style.display = 'none';
+        mobileMenu.classList.remove('open');
+        overlay.classList.remove('open');
         btn.classList.remove('open');
         btn.setAttribute('aria-expanded','false');
+        
+        // --- NEW JAVASCRIPT ---
+        document.body.classList.remove('menu-open'); // Remove class on resize if menu closes
+        // --- END NEW JAVASCRIPT ---
       }
     });
   </script>

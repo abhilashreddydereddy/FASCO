@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fasco — Inventory</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --accent:#1f6feb;
+      --muted:#6b7280;
+      --shadow: 0 6px 18px rgba(17,24,39,0.06);
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --success:#10b981;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:#111827;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body.menu-open #main-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(2px);
+      z-index: 98;
+      pointer-events: none;
+    }
+
+    .navbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 20px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));
+      backdrop-filter:blur(6px);
+      box-shadow:var(--shadow);
+      position:sticky;
+      top:0;
+      z-index:40;
+      flex-shrink: 0;
+    }
+    .left-section{display:flex;align-items:center;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:36px;height:36px;border-radius:8px;background:var(--accent);display:inline-grid;place-items:center;color:white;font-weight:700}
+    .brand h1{font-size:16px;margin:0}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;font-weight:600}
+    .nav-links a:hover{color:var(--accent)}
+    .actions{display:flex;gap:12px;align-items:center}
+    .btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}
+    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+    .btn.primary{background:var(--accent);color:white;border:none}
+    .btn.danger{background:var(--danger);color:white;border:none}
+    .btn.small{padding:6px 10px;font-size:12px}
+
+    .hamburger{border:0;background:none;cursor:pointer;padding:8px;border-radius:8px;display:inline-flex;flex-direction:column;justify-content:center}
+    .hamburger .line{width:22px;height:2px;background:#111827;margin:3px 0;transition:transform .2s ease,opacity .2s ease}
+
+    .mobile-menu{
+      display: flex; 
+      flex-direction: column;
+      gap: 8px;
+      padding: 28px 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%; 
+      width: 280px;  
+      background: var(--card);
+      z-index: 100;
+      box-shadow: var(--shadow);
+      transform: translateX(-100%); 
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    
+    #menu-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; 
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 99;
+    }
+
+    #menu-overlay.open {
+      display: block;
+    }
+
+    .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
+
+    .container{max-width:1200px;margin:0 auto;padding:20px;height:100%;overflow-y:auto}
+
+    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
+    .hamburger.open .line:nth-child(2){opacity:0}
+    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+
+    .card-image {
+        max-width: 100%; 
+        height: auto;
+        display: block;
+        border-radius: 6px; 
+    }
+
+    #inventory {
+        font-size: large;
+        color: rgb(153, 30, 30);
+    }
+
+    #main-body {
+      flex-grow: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Inventory Specific Styles */
+    .inventory-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+    
+    .inventory-header h2{
+      margin:0;
+      font-size:24px;
+    }
+
+    .search-filter-bar{
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .search-box{
+      flex:1;
+      min-width:250px;
+      position:relative;
+    }
+
+    .search-box input{
+      width:100%;
+      padding:10px 40px 10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      font-size:14px;
+    }
+
+    .search-box input:focus{
+      outline:none;
+      border-color:var(--accent);
+    }
+
+    .search-icon{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--muted);
+    }
+
+    .filter-group{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    select{
+      padding:10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      font-size:14px;
+      background:white;
+      cursor:pointer;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:16px;
+      margin-bottom:24px;
+    }
+
+    .stat-card{
+      background:var(--card);
+      padding:20px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat-card h4{
+      margin:0 0 8px 0;
+      font-size:14px;
+      color:var(--muted);
+      font-weight:500;
+    }
+
+    .stat-value{
+      font-size:28px;
+      font-weight:700;
+      margin:0;
+    }
+
+    .stat-card.low-stock .stat-value{color:var(--danger)}
+    .stat-card.total .stat-value{color:var(--accent)}
+    .stat-card.categories .stat-value{color:var(--success)}
+
+    .inventory-table-container{
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .inventory-table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .inventory-table thead{
+      background:#f9fafb;
+      border-bottom:2px solid #e5e7eb;
+    }
+
+    .inventory-table th{
+      text-align:left;
+      padding:14px 16px;
+      font-size:13px;
+      font-weight:600;
+      color:#374151;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+
+    .inventory-table td{
+      padding:14px 16px;
+      border-bottom:1px solid #f3f4f6;
+      font-size:14px;
+    }
+
+    .inventory-table tbody tr:hover{
+      background:#f9fafb;
+    }
+
+    .status-badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:12px;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .status-badge.in-stock{
+      background:#d1fae5;
+      color:#065f46;
+    }
+
+    .status-badge.low-stock{
+      background:#fed7aa;
+      color:#92400e;
+    }
+
+    .status-badge.out-stock{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+
+    .action-btns{
+      display:flex;
+      gap:6px;
+    }
+
+    .icon-btn{
+      padding:6px 8px;
+      border:1px solid #e5e7eb;
+      background:white;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:12px;
+      transition:all .2s;
+    }
+
+    .icon-btn:hover{
+      background:#f3f4f6;
+    }
+
+    .icon-btn.edit:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .icon-btn.delete:hover{
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.5);
+      z-index:200;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .modal.show{
+      display:flex;
+    }
+
+    .modal-content{
+      background:white;
+      border-radius:12px;
+      padding:28px;
+      max-width:500px;
+      width:90%;
+      max-height:90vh;
+      overflow-y:auto;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    .modal-header h3{
+      margin:0;
+    }
+
+    .close-btn{
+      background:none;
+      border:none;
+      font-size:24px;
+      cursor:pointer;
+      color:var(--muted);
+    }
+
+    .form-group{
+      margin-bottom:16px;
+    }
+
+    .form-group label{
+      display:block;
+      margin-bottom:6px;
+      font-weight:500;
+      font-size:14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      font-size:14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus{
+      outline:none;
+      border-color:var(--accent);
+    }
+
+    .form-actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      margin-top:24px;
+    }
+
+    @media (max-width:720px){
+      .nav-links{display:none}
+      .actions{display:none}
+      .inventory-header{flex-direction:column;align-items:flex-start;gap:12px}
+      .search-filter-bar{flex-direction:column}
+      .search-box{min-width:100%}
+      .inventory-table-container{overflow-x:auto}
+      .inventory-table{min-width:800px}
+      .stats-grid{grid-template-columns:1fr}
+    }
+
+  </style>
+</head>
+<body>
+  
+  <header class="navbar">
+    <div class="left-section">
+      <button class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-label="Open menu">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </button>
+      <div class="brand">
+        <div class="logo">
+          <img class="card-image" src="assets/icons/logo.png" alt="Fasco Logo">
+        </div>
+        <div>
+          <h1>Fasco</h1>
+          <div style="font-size:12px;color:var(--muted)">Inventory & Billing</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a href="home.html">Dashboard</a>
+      <a id="inventory" href="inventory.html">Inventory</a>
+      <a href="sales.html">Sales</a>
+    </nav>
+
+    <div class="actions">
+      <button class="btn">Profile</button>
+      <button class="btn primary">New Invoice</button>
+    </div>
+  </header>
+
+  <div id="main-body">
+    <div id="menu-overlay"></div>
+    <div id="mobileMenu" class="mobile-menu">
+      <a href="home.html">Dashboard</a>
+      <a href="inventory.html">Products</a>
+      <a href="sales.html">Sales</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </div>
+
+    <div class="container">
+      <div class="inventory-header">
+        <h2>Inventory Management</h2>
+        <div style="display:flex;gap:10px">
+          <button class="btn" onclick="exportInventory()">📊 Export</button>
+          <button class="btn primary" onclick="openAddModal()">+ Add Product</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <h4>Total Products</h4>
+          <p class="stat-value" id="totalProducts">0</p>
+        </div>
+        <div class="stat-card low-stock">
+          <h4>Low Stock Items</h4>
+          <p class="stat-value" id="lowStockCount">0</p>
+        </div>
+        <div class="stat-card categories">
+          <h4>Categories</h4>
+          <p class="stat-value" id="categoryCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h4>Total Value</h4>
+          <p class="stat-value" id="totalValue">₹0</p>
+        </div>
+      </div>
+
+      <!-- Search and Filter Bar -->
+      <div class="search-filter-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search products by name, code, or category..." onkeyup="filterTable()">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="filter-group">
+          <select id="categoryFilter" onchange="filterTable()">
+            <option value="">All Categories</option>
+            <option value="Fire Extinguisher">Fire Extinguishers</option>
+            <option value="Fire Alarm">Fire Alarms</option>
+            <option value="Safety Equipment">Safety Equipment</option>
+            <option value="Sprinkler System">Sprinkler Systems</option>
+            <option value="Emergency Light">Emergency Lights</option>
+          </select>
+          <select id="stockFilter" onchange="filterTable()">
+            <option value="">All Stock Status</option>
+            <option value="in-stock">In Stock</option>
+            <option value="low-stock">Low Stock</option>
+            <option value="out-stock">Out of Stock</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="inventory-table-container">
+        <table class="inventory-table" id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Product Code</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>Unit</th>
+              <th>Price (₹)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <!-- Table rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New Product</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="productForm" onsubmit="saveProduct(event)">
+        <div class="form-group">
+          <label>Product Code*</label>
+          <input type="text" id="productCode" required>
+        </div>
+        <div class="form-group">
+          <label>Product Name*</label>
+          <input type="text" id="productName" required>
+        </div>
+        <div class="form-group">
+          <label>Category*</label>
+          <select id="productCategory" required>
+            <option value="">Select Category</option>
+            <option value="Fire Extinguisher">Fire Extinguisher</option>
+            <option value="Fire Alarm">Fire Alarm</option>
+            <option value="Safety Equipment">Safety Equipment</option>
+            <option value="Sprinkler System">Sprinkler System</option>
+            <option value="Emergency Light">Emergency Light</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Stock Quantity*</label>
+          <input type="number" id="productStock" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>Unit*</label>
+          <select id="productUnit" required>
+            <option value="pcs">Pieces</option>
+            <option value="box">Box</option>
+            <option value="set">Set</option>
+            <option value="unit">Unit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price (₹)*</label>
+          <input type="number" id="productPrice" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Minimum Stock Alert</label>
+          <input type="number" id="minStock" min="0" value="10">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="productDesc" rows="3" placeholder="Optional product description..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Sample inventory data
+    let inventory = [
+      {id:1,code:'FE-ABC-001',name:'ABC Powder Fire Extinguisher 4kg',category:'Fire Extinguisher',stock:45,unit:'pcs',price:1250,minStock:10},
+      {id:2,code:'FE-CO2-002',name:'CO2 Fire Extinguisher 5kg',category:'Fire Extinguisher',stock:32,unit:'pcs',price:2100,minStock:10},
+      {id:3,code:'FA-SMK-001',name:'Smoke Detector Alarm',category:'Fire Alarm',stock:8,unit:'pcs',price:850,minStock:15},
+      {id:4,code:'SE-HMT-001',name:'Fire Safety Helmet',category:'Safety Equipment',stock:67,unit:'pcs',price:450,minStock:20},
+      {id:5,code:'SS-SPR-001',name:'Sprinkler Head Assembly',category:'Sprinkler System',stock:0,unit:'set',price:3200,minStock:5},
+      {id:6,code:'EL-LED-001',name:'Emergency LED Exit Light',category:'Emergency Light',stock:28,unit:'pcs',price:1890,minStock:10},
+      {id:7,code:'FE-FOAM-001',name:'Foam Type Fire Extinguisher 9L',category:'Fire Extinguisher',stock:15,unit:'pcs',price:3500,minStock:8},
+      {id:8,code:'FA-HEAT-001',name:'Heat Detector Alarm',category:'Fire Alarm',stock:42,unit:'pcs',price:920,minStock:15},
+      {id:9,code:'SE-SUIT-001',name:'Fire Resistant Suit',category:'Safety Equipment',stock:12,unit:'pcs',price:8500,minStock:5},
+      {id:10,code:'SS-PIPE-001',name:'Fire Sprinkler Pipe 2inch',category:'Sprinkler System',stock:89,unit:'unit',price:450,minStock:30}
+    ];
+
+    let editingId = null;
+
+    function renderTable() {
+      const tbody = document.getElementById('inventoryBody');
+      tbody.innerHTML = '';
+      
+      inventory.forEach(item => {
+        const status = item.stock === 0 ? 'out-stock' : item.stock <= item.minStock ? 'low-stock' : 'in-stock';
+        const statusText = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
+        
+        const row = `
+          <tr>
+            <td><strong>${item.code}</strong></td>
+            <td>${item.name}</td>
+            <td>${item.category}</td>
+            <td>${item.stock}</td>
+            <td>${item.unit}</td>
+            <td>₹${item.price.toLocaleString()}</td>
+            <td><span class="status-badge ${status}">${statusText}</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="icon-btn edit" onclick="editProduct(${item.id})" title="Edit">✏️</button>
+                <button class="icon-btn delete" onclick="deleteProduct(${item.id})" title="Delete">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+      
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('totalProducts').textContent = inventory.length;
+      
+      const lowStock = inventory.filter(item => item.stock <= item.minStock && item.stock > 0).length;
+      document.getElementById('lowStockCount').textContent = lowStock;
+      
+      const categories = [...new Set(inventory.map(item => item.category))].length;
+      document.getElementById('categoryCount').textContent = categories;
+      
+      const totalValue = inventory.reduce((sum, item) => sum + (item.stock * item.price), 0);
+      document.getElementById('totalValue').textContent = '₹' + totalValue.toLocaleString();
+    }
+
+    function filterTable() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const stockFilter = document.getElementById('stockFilter').value;
+      
+      const rows = document.querySelectorAll('#inventoryBody tr');
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const category = row.children[2].textContent;
+        const statusBadge = row.querySelector('.status-badge');
+        const stockStatus = statusBadge.classList.contains('in-stock') ? 'in-stock' :
+                           statusBadge.classList.contains('low-stock') ? 'low-stock' : 'out-stock';
+        
+        const matchesSearch = text.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        const matchesStock = !stockFilter || stockStatus === stockFilter;
+        
+        row.style.display = (matchesSearch && matchesCategory && matchesStock) ? '' : 'none';
+      });
+    }
+
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'Add New Product';
+      document.getElementById('productForm').reset();
+      document.getElementById('productModal').classList.add('show');
+    }
+
+    function editProduct(id) {
+      editingId = id;
+      const product = inventory.find(p => p.id === id);
+      
+      document.getElementById('modalTitle').textContent = 'Edit Product';
+      document.getElementById('productCode').value = product.code;
+      document.getElementById('productName').value = product.name;
+      document.getElementById('productCategory').value = product.category;
+      document.getElementById('productStock').value = product.stock;
+      document.getElementById('productUnit').value = product.unit;
+      document.getElementById('productPrice').value = product.price;
+      document.getElementById('minStock').value = product.minStock;
+      document.getElementById('productDesc').value = product.description || '';
+      
+      document.getElementById('productModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('show');
+      editingId = null;
+    }
+
+    function saveProduct(e) {
+      e.preventDefault();
+      
+      const product = {
+        code: document.getElementById('productCode').value,
+        name: document.getElementById('productName').value,
+        category: document.getElementById('productCategory').value,
+        stock: parseInt(document.getElementById('productStock').value),
+        unit: document.getElementById('productUnit').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        minStock: parseInt(document.getElementById('minStock').value),
+        description: document.getElementById('productDesc').value
+      };
+      
+      if (editingId) {
+        const index = inventory.findIndex(p => p.id === editingId);
+        inventory[index] = {...inventory[index], ...product};
+      } else {
+        product.id = Math.max(...inventory.map(p => p.id), 0) + 1;
+        inventory.push(product);
+      }
+      
+      renderTable();
+      closeModal();
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        inventory = inventory.filter(p => p.id !== id);
+        renderTable();
+      }
+    }
+
+    function exportInventory() {
+      let csv = 'Product Code,Product Name,Category,Stock,Unit,Price,Status\n';
+      inventory.forEach(item => {
+        const status = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
+        csv += `${item.code},"${item.name}",${item.category},${item.stock},${item.unit},${item.price},${status}\n`;
+      });
+      
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'fasco_inventory_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click();
+    }
+
+    // Mobile menu functionality
+    const btn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('menu-overlay');
+
+    function toggleMenu(){
+      const open = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mobileMenu.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      document.body.classList.toggle('menu-open', open);
+    }
+
+    btn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    window.addEventListener('resize', ()=>{
+      if(window.innerWidth > 720){
+        mobileMenu.classList.remove('open');
+        overlay.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        document.body.classList.remove('menu-open');
+      }
+    });
+
+    // Initialize table on load
+    renderTable();
+  </script>
+</body>
+</html>

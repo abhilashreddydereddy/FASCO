@@ -28,18 +28,6 @@
       overflow: hidden;
     }
 
-    body.menu-open #main-body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(2px);
-      z-index: 98;
-      pointer-events: none;
-    }
-
     .navbar{
       display:flex;
       align-items:center;
@@ -75,15 +63,15 @@
       flex-direction: column;
       gap: 8px;
       padding: 28px 20px;
-      position: absolute;
-      top: 0;
+      position: fixed;
+      top: 60px;
       left: 0;
-      height: 100%; 
+      height: calc(100% - 60px); 
       width: 280px;  
       background: var(--card);
-      z-index: 100;
+      z-index: 50;
       box-shadow: var(--shadow);
-      transform: translateX(-100%); 
+      transform: translateX(-280px); 
       transition: transform 0.3s ease-in-out;
     }
 
@@ -93,16 +81,6 @@
     
     #menu-overlay {
       display: none;
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; 
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 99;
-    }
-
-    #menu-overlay.open {
-      display: block;
     }
 
     .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
@@ -129,6 +107,11 @@
       flex-grow: 1;
       position: relative;
       overflow: hidden;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    #main-body.pushed {
+      margin-left: 280px;
     }
 
     /* Inventory Specific Styles */
@@ -597,20 +580,16 @@
     const modalTitle = document.getElementById("modalTitle");
     const tbody = document.getElementById('inventoryBody');
 
-    let inventory = []; // This will be filled from the API
+    let inventory = [];
     let editingId = null;
 
     // --- API Functions ---
     
-    // 1. FETCH all products from DB
     async function fetchProducts() {
       try {
         const res = await fetch(API_URL);
         inventory = await res.json();
-        
-        // Map db `min_stock` to frontend `minStock`
         inventory = inventory.map(p => ({...p, minStock: p.min_stock}));
-        
         renderTable();
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -618,7 +597,6 @@
       }
     }
 
-    // 2. ADD a new product to DB
     async function addProductAPI(product) {
       try {
         const res = await fetch(API_URL, {
@@ -627,17 +605,13 @@
           body: JSON.stringify(product),
         });
         const newProduct = await res.json();
-        
-        // Add new product to local array and re-render
         inventory.push({...newProduct, minStock: newProduct.min_stock});
         renderTable();
-        
       } catch (err) {
         console.error("Error adding product:", err);
       }
     }
 
-    // 3. UPDATE a product in DB
     async function updateProductAPI(id, product) {
       try {
         const res = await fetch(`${API_URL}/${id}`, {
@@ -646,34 +620,25 @@
           body: JSON.stringify(product),
         });
         const updatedProduct = await res.json();
-        
-        // Find and update in local array and re-render
         const index = inventory.findIndex(p => p.id === id);
         if (index !== -1) {
           inventory[index] = {...updatedProduct, minStock: updatedProduct.min_stock};
         }
         renderTable();
-        
       } catch (err) {
         console.error("Error updating product:", err);
       }
     }
 
-    // 4. DELETE a product from DB
     async function deleteProductAPI(id) {
       try {
         await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-        
-        // Remove from local array and re-render
         inventory = inventory.filter(p => p.id !== id);
         renderTable();
-
       } catch (err) {
         console.error("Error deleting product:", err);
       }
     }
-
-    // --- UI/Helper Functions (Mostly unchanged) ---
 
     function renderTable() {
       tbody.innerHTML = '';
@@ -716,7 +681,6 @@
     }
 
     function filterTable() {
-      // (This function remains unchanged)
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
       const categoryFilter = document.getElementById('categoryFilter').value;
       const stockFilter = document.getElementById('stockFilter').value;
@@ -773,15 +737,13 @@
         stock: parseInt(document.getElementById('productStock').value),
         unit: document.getElementById('productUnit').value,
         price: parseFloat(document.getElementById('productPrice').value),
-        minStock: parseInt(document.getElementById('minStock').value), // Frontend uses camelCase
+        minStock: parseInt(document.getElementById('minStock').value),
         description: document.getElementById('productDesc').value
       };
       
       if (editingId) {
-        // Send to API to UPDATE
         updateProductAPI(editingId, product);
       } else {
-        // Send to API to ADD
         addProductAPI(product);
       }
       
@@ -790,13 +752,11 @@
 
     function deleteProduct(id) {
       if (confirm('Are you sure you want to delete this product?')) {
-        // Send to API to DELETE
         deleteProductAPI(id);
       }
     }
 
     function exportInventory() {
-      // (This function remains unchanged)
       let csv = 'Product Code,Product Name,Category,Stock,Unit,Price,Status\n';
       inventory.forEach(item => {
         const status = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
@@ -810,34 +770,28 @@
       a.click();
     }
 
-    // --- Mobile Menu (Unchanged) ---
+    // --- Mobile Menu ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-    const overlay = document.getElementById('menu-overlay');
+    const mainBody = document.getElementById('main-body');
 
     function toggleMenu(){
       const open = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       mobileMenu.classList.toggle('open', open);
-      overlay.classList.toggle('open', open);
-      document.body.classList.toggle('menu-open', open);
+      mainBody.classList.toggle('pushed', open);
     }
     btn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
     window.addEventListener('resize', ()=>{
       if(window.innerWidth > 720){
         mobileMenu.classList.remove('open');
-        overlay.classList.remove('open');
         btn.classList.remove('open');
         btn.setAttribute('aria-expanded','false');
-        document.body.classList.remove('menu-open');
+        mainBody.classList.remove('pushed');
       }
     });
 
-    // --- INITIALIZE ---
-    // Load products from the database on page load
     document.addEventListener('DOMContentLoaded', fetchProducts);
-
-</script>
+  </script>
 </body>
 </html>

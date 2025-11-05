@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS customers (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  phone VARCHAR(20), -- This is the column that was missing
+  phone VARCHAR(20),
+  pay_type VARCHAR(20), -- This is the column that was missing
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

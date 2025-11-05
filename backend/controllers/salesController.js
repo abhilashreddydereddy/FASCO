@@ -28,9 +28,10 @@ exports.createSale = async (req, res) => {
     // We can make this smarter later (e.g., find by phone)
     // For now, we just create a new customer for every sale
     const customerRes = await client.query(
-      "INSERT INTO customers (name, phone) VALUES ($1, $2) RETURNING id",
-      [customerName, customerPhone || null]
+    "INSERT INTO customers (name, phone, paymentMethod) VALUES ($1, $2, $3) RETURNING id",
+    [customerName, customerPhone || null, paymentMethod || null]
     );
+
     const customerId = customerRes.rows[0].id;
 
     // 4. Create the order

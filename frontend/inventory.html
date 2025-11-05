@@ -591,24 +591,91 @@
   </div>
 
   <script>
-    // Sample inventory data
-    let inventory = [
-      {id:1,code:'FE-ABC-001',name:'ABC Powder Fire Extinguisher 4kg',category:'Fire Extinguisher',stock:45,unit:'pcs',price:1250,minStock:10},
-      {id:2,code:'FE-CO2-002',name:'CO2 Fire Extinguisher 5kg',category:'Fire Extinguisher',stock:32,unit:'pcs',price:2100,minStock:10},
-      {id:3,code:'FA-SMK-001',name:'Smoke Detector Alarm',category:'Fire Alarm',stock:8,unit:'pcs',price:850,minStock:15},
-      {id:4,code:'SE-HMT-001',name:'Fire Safety Helmet',category:'Safety Equipment',stock:67,unit:'pcs',price:450,minStock:20},
-      {id:5,code:'SS-SPR-001',name:'Sprinkler Head Assembly',category:'Sprinkler System',stock:0,unit:'set',price:3200,minStock:5},
-      {id:6,code:'EL-LED-001',name:'Emergency LED Exit Light',category:'Emergency Light',stock:28,unit:'pcs',price:1890,minStock:10},
-      {id:7,code:'FE-FOAM-001',name:'Foam Type Fire Extinguisher 9L',category:'Fire Extinguisher',stock:15,unit:'pcs',price:3500,minStock:8},
-      {id:8,code:'FA-HEAT-001',name:'Heat Detector Alarm',category:'Fire Alarm',stock:42,unit:'pcs',price:920,minStock:15},
-      {id:9,code:'SE-SUIT-001',name:'Fire Resistant Suit',category:'Safety Equipment',stock:12,unit:'pcs',price:8500,minStock:5},
-      {id:10,code:'SS-PIPE-001',name:'Fire Sprinkler Pipe 2inch',category:'Sprinkler System',stock:89,unit:'unit',price:450,minStock:30}
-    ];
+    const API_URL = "http://localhost:5000/api/products";
+    const productModal = document.getElementById("productModal");
+    const productForm = document.getElementById("productForm");
+    const modalTitle = document.getElementById("modalTitle");
+    const tbody = document.getElementById('inventoryBody');
 
+    let inventory = []; // This will be filled from the API
     let editingId = null;
 
+    // --- API Functions ---
+    
+    // 1. FETCH all products from DB
+    async function fetchProducts() {
+      try {
+        const res = await fetch(API_URL);
+        inventory = await res.json();
+        
+        // Map db `min_stock` to frontend `minStock`
+        inventory = inventory.map(p => ({...p, minStock: p.min_stock}));
+        
+        renderTable();
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:red;">Error loading products. Is the backend server running?</td></tr>`;
+      }
+    }
+
+    // 2. ADD a new product to DB
+    async function addProductAPI(product) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(product),
+        });
+        const newProduct = await res.json();
+        
+        // Add new product to local array and re-render
+        inventory.push({...newProduct, minStock: newProduct.min_stock});
+        renderTable();
+        
+      } catch (err) {
+        console.error("Error adding product:", err);
+      }
+    }
+
+    // 3. UPDATE a product in DB
+    async function updateProductAPI(id, product) {
+      try {
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(product),
+        });
+        const updatedProduct = await res.json();
+        
+        // Find and update in local array and re-render
+        const index = inventory.findIndex(p => p.id === id);
+        if (index !== -1) {
+          inventory[index] = {...updatedProduct, minStock: updatedProduct.min_stock};
+        }
+        renderTable();
+        
+      } catch (err) {
+        console.error("Error updating product:", err);
+      }
+    }
+
+    // 4. DELETE a product from DB
+    async function deleteProductAPI(id) {
+      try {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        
+        // Remove from local array and re-render
+        inventory = inventory.filter(p => p.id !== id);
+        renderTable();
+
+      } catch (err) {
+        console.error("Error deleting product:", err);
+      }
+    }
+
+    // --- UI/Helper Functions (Mostly unchanged) ---
+
     function renderTable() {
-      const tbody = document.getElementById('inventoryBody');
       tbody.innerHTML = '';
       
       inventory.forEach(item => {
@@ -640,51 +707,45 @@
 
     function updateStats() {
       document.getElementById('totalProducts').textContent = inventory.length;
-      
       const lowStock = inventory.filter(item => item.stock <= item.minStock && item.stock > 0).length;
       document.getElementById('lowStockCount').textContent = lowStock;
-      
       const categories = [...new Set(inventory.map(item => item.category))].length;
       document.getElementById('categoryCount').textContent = categories;
-      
       const totalValue = inventory.reduce((sum, item) => sum + (item.stock * item.price), 0);
       document.getElementById('totalValue').textContent = '₹' + totalValue.toLocaleString();
     }
 
     function filterTable() {
+      // (This function remains unchanged)
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
       const categoryFilter = document.getElementById('categoryFilter').value;
       const stockFilter = document.getElementById('stockFilter').value;
-      
       const rows = document.querySelectorAll('#inventoryBody tr');
-      
       rows.forEach(row => {
         const text = row.textContent.toLowerCase();
         const category = row.children[2].textContent;
         const statusBadge = row.querySelector('.status-badge');
         const stockStatus = statusBadge.classList.contains('in-stock') ? 'in-stock' :
-                           statusBadge.classList.contains('low-stock') ? 'low-stock' : 'out-stock';
-        
+                            statusBadge.classList.contains('low-stock') ? 'low-stock' : 'out-stock';
         const matchesSearch = text.includes(searchTerm);
         const matchesCategory = !categoryFilter || category === categoryFilter;
         const matchesStock = !stockFilter || stockStatus === stockFilter;
-        
         row.style.display = (matchesSearch && matchesCategory && matchesStock) ? '' : 'none';
       });
     }
 
     function openAddModal() {
       editingId = null;
-      document.getElementById('modalTitle').textContent = 'Add New Product';
-      document.getElementById('productForm').reset();
-      document.getElementById('productModal').classList.add('show');
+      modalTitle.textContent = 'Add New Product';
+      productForm.reset();
+      productModal.classList.add('show');
     }
 
     function editProduct(id) {
       editingId = id;
       const product = inventory.find(p => p.id === id);
       
-      document.getElementById('modalTitle').textContent = 'Edit Product';
+      modalTitle.textContent = 'Edit Product';
       document.getElementById('productCode').value = product.code;
       document.getElementById('productName').value = product.name;
       document.getElementById('productCategory').value = product.category;
@@ -694,11 +755,11 @@
       document.getElementById('minStock').value = product.minStock;
       document.getElementById('productDesc').value = product.description || '';
       
-      document.getElementById('productModal').classList.add('show');
+      productModal.classList.add('show');
     }
 
     function closeModal() {
-      document.getElementById('productModal').classList.remove('show');
+      productModal.classList.remove('show');
       editingId = null;
     }
 
@@ -712,36 +773,35 @@
         stock: parseInt(document.getElementById('productStock').value),
         unit: document.getElementById('productUnit').value,
         price: parseFloat(document.getElementById('productPrice').value),
-        minStock: parseInt(document.getElementById('minStock').value),
+        minStock: parseInt(document.getElementById('minStock').value), // Frontend uses camelCase
         description: document.getElementById('productDesc').value
       };
       
       if (editingId) {
-        const index = inventory.findIndex(p => p.id === editingId);
-        inventory[index] = {...inventory[index], ...product};
+        // Send to API to UPDATE
+        updateProductAPI(editingId, product);
       } else {
-        product.id = Math.max(...inventory.map(p => p.id), 0) + 1;
-        inventory.push(product);
+        // Send to API to ADD
+        addProductAPI(product);
       }
       
-      renderTable();
       closeModal();
     }
 
     function deleteProduct(id) {
       if (confirm('Are you sure you want to delete this product?')) {
-        inventory = inventory.filter(p => p.id !== id);
-        renderTable();
+        // Send to API to DELETE
+        deleteProductAPI(id);
       }
     }
 
     function exportInventory() {
+      // (This function remains unchanged)
       let csv = 'Product Code,Product Name,Category,Stock,Unit,Price,Status\n';
       inventory.forEach(item => {
         const status = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
         csv += `${item.code},"${item.name}",${item.category},${item.stock},${item.unit},${item.price},${status}\n`;
       });
-      
       const blob = new Blob([csv], {type: 'text/csv'});
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -750,7 +810,7 @@
       a.click();
     }
 
-    // Mobile menu functionality
+    // --- Mobile Menu (Unchanged) ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const overlay = document.getElementById('menu-overlay');
@@ -762,10 +822,8 @@
       overlay.classList.toggle('open', open);
       document.body.classList.toggle('menu-open', open);
     }
-
     btn.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', toggleMenu);
-
     window.addEventListener('resize', ()=>{
       if(window.innerWidth > 720){
         mobileMenu.classList.remove('open');
@@ -776,8 +834,10 @@
       }
     });
 
-    // Initialize table on load
-    renderTable();
-  </script>
+    // --- INITIALIZE ---
+    // Load products from the database on page load
+    document.addEventListener('DOMContentLoaded', fetchProducts);
+
+</script>
 </body>
 </html>

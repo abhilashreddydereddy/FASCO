@@ -1,3 +1,7 @@
+-- psql -U postgres -d fasco -f ../database/setup.sql
+
+
+-- Create the USERS table (if it doesn't exist)
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) NOT NULL,
@@ -5,38 +9,29 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(200) NOT NULL
 );
 
+-- Create the new, correct PRODUCTS table
 CREATE TABLE IF NOT EXISTS products (
   id SERIAL PRIMARY KEY,
+  code VARCHAR(50) UNIQUE NOT NULL,
   name VARCHAR(100) NOT NULL,
   category VARCHAR(50),
+  stock INT DEFAULT 0,
+  unit VARCHAR(20) DEFAULT 'pcs',
   price NUMERIC(10, 2),
-  stock INT DEFAULT 0
+  min_stock INT DEFAULT 10,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS customers (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  contact VARCHAR(100),
-  address TEXT
-);
-
-CREATE TABLE IF NOT EXISTS orders (
-  id SERIAL PRIMARY KEY,
-  customer_id INT REFERENCES customers(id) ON DELETE CASCADE,
-  order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-  id SERIAL PRIMARY KEY,
-  order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-  product_id INT REFERENCES products(id),
-  quantity INT,
-  subtotal NUMERIC(10, 2)
-);
-
-CREATE TABLE IF NOT EXISTS invoices (
-  id SERIAL PRIMARY KEY,
-  order_id INT REFERENCES orders(id),
-  total_amount NUMERIC(10, 2),
-  payment_status VARCHAR(50) DEFAULT 'Pending'
-);
+-- INSERT INTO products (code, name, category, stock, unit, price, min_stock, description) 
+-- VALUES
+-- ('FE-ABC-001', 'ABC Powder Fire Extinguisher 4kg', 'Fire Extinguisher', 45, 'pcs', 1250, 10, ''),
+-- ('FE-CO2-002', 'CO2 Fire Extinguisher 5kg', 'Fire Extinguisher', 32, 'pcs', 2100, 10, ''),
+-- ('FA-SMK-001', 'Smoke Detector Alarm', 'Fire Alarm', 8, 'pcs', 850, 15, ''),
+-- ('SE-HMT-001', 'Fire Safety Helmet', 'Safety Equipment', 67, 'pcs', 450, 20, ''),
+-- ('SS-SPR-001', 'Sprinkler Head Assembly', 'Sprinkler System', 0, 'set', 3200, 5, ''),
+-- ('EL-LED-001', 'Emergency LED Exit Light', 'Emergency Light', 28, 'pcs', 1890, 10, ''),
+-- ('FE-FOAM-001', 'Foam Type Fire Extinguisher 9L', 'Fire Extinguisher', 15, 'pcs', 3500, 8, ''),
+-- ('FA-HEAT-001', 'Heat Detector Alarm', 'Fire Alarm', 42, 'pcs', 920, 15, ''),
+-- ('SE-SUIT-001', 'Fire Resistant Suit', 'Safety Equipment', 12, 'pcs', 8500, 5, ''),
+-- ('SS-PIPE-001', 'Fire Sprinkler Pipe 2inch', 'Sprinkler System', 89, 'unit', 450, 30, '');

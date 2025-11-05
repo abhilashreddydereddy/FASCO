@@ -815,89 +815,84 @@
   </div>
 
   <script>
-    // Sample products (fire safety equipment)
-    const products = [
-      {id:1,code:'FE-ABC-001',name:'ABC Powder Fire Extinguisher 4kg',category:'Fire Extinguisher',stock:45,price:1250},
-      {id:2,code:'FE-CO2-002',name:'CO2 Fire Extinguisher 5kg',category:'Fire Extinguisher',stock:32,price:2100},
-      {id:3,code:'FA-SMK-001',name:'Smoke Detector Alarm',category:'Fire Alarm',stock:8,price:850},
-      {id:4,code:'SE-HMT-001',name:'Fire Safety Helmet',category:'Safety Equipment',stock:67,price:450},
-      {id:5,code:'SS-SPR-001',name:'Sprinkler Head Assembly',category:'Sprinkler System',stock:0,price:3200},
-      {id:6,code:'EL-LED-001',name:'Emergency LED Exit Light',category:'Emergency Light',stock:28,price:1890},
-      {id:7,code:'FE-FOAM-001',name:'Foam Type Fire Extinguisher 9L',category:'Fire Extinguisher',stock:15,price:3500},
-      {id:8,code:'FA-HEAT-001',name:'Heat Detector Alarm',category:'Fire Alarm',stock:42,price:920},
-      {id:9,code:'SE-SUIT-001',name:'Fire Resistant Suit',category:'Safety Equipment',stock:12,price:8500},
-      {id:10,code:'SS-PIPE-001',name:'Fire Sprinkler Pipe 2inch',category:'Sprinkler System',stock:89,price:450}
-    ];
+    const PRODUCTS_API_URL = "http://localhost:5000/api/sales/products";
+    const SALES_API_URL = "http://localhost:5000/api/sales";
 
+    let products = []; // Will be fetched from API
     let cart = [];
-    let invoiceCounter = 1000;
 
-    // Render all products in the grid
-    function renderProducts() {
+    // --- Product Loading and Filtering ---
+
+    // Render all products from the API
+    async function renderProducts() {
       const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
+      grid.innerHTML = '<p>Loading products...</p>';
       
-      products.forEach(product => {
-        const isOutOfStock = product.stock === 0;
-        const isLowStock = product.stock > 0 && product.stock <= 10;
-        const card = document.createElement('div');
+      try {
+        const res = await fetch(PRODUCTS_API_URL);
+        products = await res.json();
         
-        let cardClass = 'product-card';
-        if (isOutOfStock) cardClass += ' out-of-stock';
-        else if (isLowStock) cardClass += ' low-stock';
-        
-        card.className = cardClass;
-        card.onclick = isOutOfStock ? null : () => addToCart(product);
-        
-        let stockClass = '';
-        let stockText = '';
-        if (isOutOfStock) {
-          stockClass = 'out';
-          stockText = 'Out of Stock';
-        } else if (isLowStock) {
-          stockClass = 'low';
-          stockText = `Low Stock: ${product.stock}`;
-        } else {
-          stockText = `${product.stock} in stock`;
+        if (products.length === 0) {
+          grid.innerHTML = '<p>No products in stock.</p>';
+          return;
         }
-        
-        card.innerHTML = `
-          <div class="product-category">${product.category}</div>
-          <div class="product-code">${product.code}</div>
-          <div class="product-name">${product.name}</div>
-          <div class="product-info">
-            <div class="product-price">₹${product.price.toLocaleString()}</div>
-            <div class="product-stock ${stockClass}">${stockText}</div>
-          </div>
-        `;
-        
-        grid.appendChild(card);
-      });
+
+        grid.innerHTML = '';
+        products.forEach(product => {
+          const isLowStock = product.stock > 0 && product.stock <= 10;
+          
+          const card = document.createElement('div');
+          let cardClass = 'product-card';
+          if (isLowStock) cardClass += ' low-stock';
+          
+          card.className = cardClass;
+          card.onclick = () => addToCart(product);
+          
+          const stockClass = isLowStock ? 'low' : '';
+          const stockText = isLowStock ? `Low Stock: ${product.stock}` : `${product.stock} in stock`;
+          
+          card.innerHTML = `
+            <div class="product-category">${product.category}</div>
+            <div class="product-code">${product.code}</div>
+            <div class="product-name">${product.name}</div>
+            <div class="product-info">
+              <div class="product-price">₹${product.price.toLocaleString()}</div>
+              <div class="product-stock ${stockClass}">${stockText}</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<p style="color:red;">Error loading products. Is the server running?</p>';
+      }
     }
 
-    // Filter products based on search
+    // Filter products based on search (unchanged)
     function filterProducts() {
       const search = document.getElementById('productSearch').value.toLowerCase();
       const cards = document.querySelectorAll('.product-card');
-      
       cards.forEach(card => {
         const text = card.textContent.toLowerCase();
         card.style.display = text.includes(search) ? '' : 'none';
       });
     }
 
-    // Clear search
+    // Clear search (unchanged)
     function clearSearch() {
       document.getElementById('productSearch').value = '';
       filterProducts();
     }
 
+    // --- Cart Functions ---
+
     // Add product to cart
     function addToCart(product) {
       const existingItem = cart.find(item => item.id === product.id);
+      const productFromStock = products.find(p => p.id === product.id);
       
       if (existingItem) {
-        if (existingItem.quantity < product.stock) {
+        if (existingItem.quantity < productFromStock.stock) {
           existingItem.quantity++;
         } else {
           alert('Cannot add more. Stock limit reached!');
@@ -906,7 +901,6 @@
       } else {
         cart.push({...product, quantity: 1});
       }
-      
       renderCart();
     }
 
@@ -941,7 +935,7 @@
         renderCart();
       } else {
         alert('Cannot exceed available stock!');
-        renderCart();
+        renderCart(); // Resets input to last valid qty
       }
     }
 
@@ -1013,8 +1007,9 @@
       document.getElementById('total').textContent = `₹${total.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     }
 
-    // Generate invoice
-    function generateInvoice() {
+    // --- Invoice Generation (NOW TALKS TO BACKEND) ---
+
+    async function generateInvoice() {
       const customerName = document.getElementById('customerName').value.trim();
       
       if (!customerName) {
@@ -1022,7 +1017,6 @@
         document.getElementById('customerName').focus();
         return;
       }
-      
       if (cart.length === 0) {
         alert('Cart is empty! Add products first.');
         return;
@@ -1031,21 +1025,56 @@
       const customerPhone = document.getElementById('customerPhone').value.trim();
       const paymentMethod = document.getElementById('paymentMethod').value;
       
-      // Generate invoice number and date
-      invoiceCounter++;
-      const invoiceNum = `INV-${new Date().getFullYear()}-${String(invoiceCounter).padStart(5, '0')}`;
-      const invoiceDate = new Date().toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const tax = subtotal * 0.18;
+      const total = subtotal + tax;
+
+      // 1. Create the data payload
+      const saleData = {
+        customerName,
+        customerPhone,
+        paymentMethod,
+        cart,
+        subtotal,
+        tax,
+        total
+      };
+
+      try {
+        // 2. Send the sale to the backend
+        const res = await fetch(SALES_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(saleData)
+        });
+
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to create sale.');
+        }
+
+        // 3. Populate and show the modal with data from the backend
+        populateInvoiceModal(data);
+        document.getElementById('invoiceModal').classList.add('show');
+
+      } catch (err) {
+        alert("Error creating sale: " + err.message);
+        console.error(err);
+      }
+    }
+
+    // This function populates the modal
+    function populateInvoiceModal(data) {
+      const { invoice, order, customer } = data;
+      const invoiceDate = new Date(invoice.invoice_date).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric'
       });
       
-      // Populate invoice header
-      document.getElementById('invoiceNumber').textContent = invoiceNum;
+      document.getElementById('invoiceNumber').textContent = invoice.invoice_number;
       document.getElementById('invoiceDate').textContent = invoiceDate;
-      document.getElementById('invCustomerName').textContent = customerName;
-      document.getElementById('invCustomerPhone').textContent = customerPhone || 'N/A';
-      document.getElementById('invPaymentMethod').textContent = paymentMethod;
+      document.getElementById('invCustomerName').textContent = customer.name;
+      document.getElementById('invCustomerPhone').textContent = customer.phone || 'N/A';
+      document.getElementById('invPaymentMethod').textContent = invoice.payment_method;
       
       // Populate invoice items
       const invoiceItemsBody = document.getElementById('invoiceItems');
@@ -1062,7 +1091,7 @@
         </tr>
       `).join('');
       
-      // Calculate and populate totals
+      // Populate totals (from the order, to be safe)
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const tax = subtotal * 0.18;
       const total = subtotal + tax;
@@ -1070,35 +1099,32 @@
       document.getElementById('invSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
       document.getElementById('invTax').textContent = `₹${tax.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
       document.getElementById('invTotal').textContent = `₹${total.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-      
-      // Show modal
-      document.getElementById('invoiceModal').classList.add('show');
     }
 
-    // Close invoice and optionally clear cart
+    // Close invoice and clear cart
     function closeInvoice() {
       document.getElementById('invoiceModal').classList.remove('show');
       
-      if (confirm('Invoice generated successfully! Clear cart for next sale?')) {
-        cart = [];
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        document.getElementById('paymentMethod').value = 'Cash';
-        renderCart();
-      }
+      // Clear cart, customer info, and re-fetch products (to get new stock)
+      cart = [];
+      document.getElementById('customerName').value = '';
+      document.getElementById('customerPhone').value = '';
+      document.getElementById('paymentMethod').value = 'Cash';
+      renderCart();
+      renderProducts(); // Re-fetch products to show updated stock
     }
 
-    // Print invoice
+    // Print invoice (unchanged)
     function printInvoice() {
       window.print();
     }
 
-    // Download invoice as PDF (placeholder)
+    // Download invoice (unchanged)
     function downloadInvoice() {
       alert('PDF download functionality would require a PDF library like jsPDF or html2pdf.js\n\nFor now, you can use the Print button and save as PDF from the print dialog.');
     }
 
-    // Hamburger menu functionality
+    // --- Mobile Menu (unchanged) ---
     const hamburger = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const menuOverlay = document.getElementById('menu-overlay');
@@ -1111,7 +1137,6 @@
       body.classList.toggle('menu-open');
       hamburger.setAttribute('aria-expanded', isOpen);
     });
-
     menuOverlay.addEventListener('click', () => {
       hamburger.classList.remove('open');
       mobileMenu.classList.remove('open');
@@ -1120,8 +1145,8 @@
       hamburger.setAttribute('aria-expanded', 'false');
     });
 
-    // Initialize app
-    renderProducts();
-  </script>
+    // --- INITIALIZE APP ---
+    document.addEventListener('DOMContentLoaded', renderProducts);
+</script>
 </body>
 </html>

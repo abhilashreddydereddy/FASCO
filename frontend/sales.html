@@ -655,11 +655,14 @@
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Inventory</a>
       <a id="sales" href="#sales">Sales</a>
+      <a href="orders.html">Orders</a>
+      <a href="users.html">Users</a>
     </nav>
 
     <div class="actions">
       <button class="btn">Profile</button>
       <button class="btn primary">New Invoice</button>
+      <button class="btn danger" id="logoutBtn">Log Out</button>
     </div>
   </header>
 
@@ -669,6 +672,8 @@
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Products</a>
       <a href="sales.html">Sales</a>
+      <a href="orders.html">Orders</a>
+      <a href="users.html">Users</a>
       <a href="#">Reports</a>
       <a href="#">Settings</a>
     </div>
@@ -1160,6 +1165,12 @@
 
     // --- INITIALIZE APP ---
     document.addEventListener('DOMContentLoaded', renderProducts);
+
+    // --- Log Out Button ---
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token'); // Clear the token
+      window.location.href = 'login.html'; // Go back to login page
+    });
 </script>
 </body>
 </html>

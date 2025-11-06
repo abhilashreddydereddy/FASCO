@@ -546,7 +546,7 @@
                     
                     // Store token in memory (not localStorage due to artifact restrictions)
                     // In a real application, this would use localStorage
-                    window.userToken = data.token;
+                    localStorage.setItem('token', data.token);
                     
                     if (rememberMe) {
                         // In real app, would store in localStorage

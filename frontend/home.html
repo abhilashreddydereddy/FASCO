@@ -53,8 +53,34 @@
     .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
     .btn.primary{background:var(--accent);color:white;border:none}
 
-    .hamburger{border:0;background:none;cursor:pointer;padding:8px;border-radius:8px;display:inline-flex;flex-direction:column;justify-content:center}
-    .hamburger .line{width:22px;height:2px;background:#111827;margin:3px 0;transition:transform .2s ease,opacity .2s ease}
+        /* --- Modern Version --- */
+
+    .hamburger {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      
+      /* Use gap for spacing instead of margin */
+      gap: 6px; 
+    }
+
+    .hamburger .line {
+      width: 22px;
+      height: 2px;
+      background: #111827;
+      /* No margin needed! */
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      backface-visibility: hidden;
+    }
+
+    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
+    .hamburger.open .line:nth-child(2){opacity:0}
+    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
 
     .mobile-menu{
       display: flex; 
@@ -80,10 +106,6 @@
     .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
 
     .container{max-width:1200px;margin:0 auto;padding:20px;height:100%;overflow-y:auto}
-
-    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
-    .hamburger.open .line:nth-child(2){opacity:0}
-    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
 
     .card-image {
         max-width: 100%; 

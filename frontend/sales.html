@@ -683,7 +683,7 @@
               </div>
               <div class="form-group">
                 <label>Payment Method</label>
-                <select id="paymentMethod">
+                <select id="payment_method">
                   <option value="Cash">Cash</option>
                   <option value="Card">Card</option>
                   <option value="UPI">UPI</option>
@@ -1010,7 +1010,7 @@
       }
       
       const customerPhone = document.getElementById('customerPhone').value.trim();
-      const paymentMethod = document.getElementById('paymentMethod').value;
+      const payment_method = document.getElementById('payment_method').value;
       
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const tax = subtotal * 0.18;
@@ -1020,7 +1020,7 @@
       const saleData = {
         customerName,
         customerPhone,
-        paymentMethod,
+        payment_method,
         cart,
         subtotal,
         tax,
@@ -1096,7 +1096,7 @@
       cart = [];
       document.getElementById('customerName').value = '';
       document.getElementById('customerPhone').value = '';
-      document.getElementById('paymentMethod').value = 'Cash';
+      document.getElementById('payment_method').value = 'Cash';
       renderCart();
       renderProducts(); // Re-fetch products to show updated stock
     }

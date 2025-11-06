@@ -15,7 +15,7 @@ exports.getSalesProducts = async (req, res) => {
 
 // Create a new Sale (Order, Invoice, etc.)
 exports.createSale = async (req, res) => {
-  const { customerName, customerPhone, paymentMethod, cart, subtotal, tax, total } = req.body;
+  const { customerName, customerPhone, payment_method, cart, subtotal, tax, total } = req.body;
 
   // 1. Get a connection client from the pool
   const client = await pool.connect();
@@ -28,8 +28,8 @@ exports.createSale = async (req, res) => {
     // We can make this smarter later (e.g., find by phone)
     // For now, we just create a new customer for every sale
     const customerRes = await client.query(
-    "INSERT INTO customers (name, phone, paymentMethod) VALUES ($1, $2, $3) RETURNING id",
-    [customerName, customerPhone || null, paymentMethod || null]
+    "INSERT INTO customers (name, phone, payment_method) VALUES ($1, $2, $3) RETURNING id",
+    [customerName, customerPhone || null, payment_method || null]
     );
 
     const customerId = customerRes.rows[0].id;
@@ -62,7 +62,7 @@ exports.createSale = async (req, res) => {
     const invoiceNumber = `INV-${new Date().getFullYear()}-${String(orderId).padStart(5, '0')}`;
     const invoiceRes = await client.query(
       "INSERT INTO invoices (order_id, invoice_number, invoice_date, payment_method) VALUES ($1, $2, $3, $4) RETURNING *",
-      [orderId, invoiceNumber, orderDate, paymentMethod]
+      [orderId, invoiceNumber, orderDate, payment_method]
     );
 
     // 7. Commit the transaction

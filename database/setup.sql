@@ -20,19 +20,6 @@ CREATE TABLE IF NOT EXISTS products (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- INSERT INTO products (code, name, category, stock, unit, price, min_stock, description) 
--- VALUES
--- ('FE-ABC-001', 'ABC Powder Fire Extinguisher 4kg', 'Fire Extinguisher', 45, 'pcs', 1250, 10, ''),
--- ('FE-CO2-002', 'CO2 Fire Extinguisher 5kg', 'Fire Extinguisher', 32, 'pcs', 2100, 10, ''),
--- ('FA-SMK-001', 'Smoke Detector Alarm', 'Fire Alarm', 8, 'pcs', 850, 15, ''),
--- ('SE-HMT-001', 'Fire Safety Helmet', 'Safety Equipment', 67, 'pcs', 450, 20, ''),
--- ('SS-SPR-001', 'Sprinkler Head Assembly', 'Sprinkler System', 0, 'set', 3200, 5, ''),
--- ('EL-LED-001', 'Emergency LED Exit Light', 'Emergency Light', 28, 'pcs', 1890, 10, ''),
--- ('FE-FOAM-001', 'Foam Type Fire Extinguisher 9L', 'Fire Extinguisher', 15, 'pcs', 3500, 8, ''),
--- ('FA-HEAT-001', 'Heat Detector Alarm', 'Fire Alarm', 42, 'pcs', 920, 15, ''),
--- ('SE-SUIT-001', 'Fire Resistant Suit', 'Safety Equipment', 12, 'pcs', 8500, 5, ''),
--- ('SS-PIPE-001', 'Fire Sprinkler Pipe 2inch', 'Sprinkler System', 89, 'unit', 450, 30, '');
-
 -- Create the USERS table (if it doesn't exist)
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -96,7 +83,21 @@ CREATE TABLE IF NOT EXISTS invoices (
   payment_status VARCHAR(50) DEFAULT 'Paid'
 );
 
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+-- INSERT INTO products (code, name, category, stock, unit, price, min_stock, description) 
+-- VALUES
+-- ('FE-ABC-001', 'ABC Powder Fire Extinguisher 4kg', 'Fire Extinguisher', 45, 'pcs', 1250, 10, ''),
+-- ('FE-CO2-002', 'CO2 Fire Extinguisher 5kg', 'Fire Extinguisher', 32, 'pcs', 2100, 10, ''),
+-- ('FA-SMK-001', 'Smoke Detector Alarm', 'Fire Alarm', 8, 'pcs', 850, 15, ''),
+-- ('SE-HMT-001', 'Fire Safety Helmet', 'Safety Equipment', 67, 'pcs', 450, 20, ''),
+-- ('SS-SPR-001', 'Sprinkler Head Assembly', 'Sprinkler System', 0, 'set', 3200, 5, ''),
+-- ('EL-LED-001', 'Emergency LED Exit Light', 'Emergency Light', 28, 'pcs', 1890, 10, ''),
+-- ('FE-FOAM-001', 'Foam Type Fire Extinguisher 9L', 'Fire Extinguisher', 15, 'pcs', 3500, 8, ''),
+-- ('FA-HEAT-001', 'Heat Detector Alarm', 'Fire Alarm', 42, 'pcs', 920, 15, ''),
+-- ('SE-SUIT-001', 'Fire Resistant Suit', 'Safety Equipment', 12, 'pcs', 8500, 5, ''),
+-- ('SS-PIPE-001', 'Fire Sprinkler Pipe 2inch', 'Sprinkler System', 89, 'unit', 450, 30, '');
+
 -- -- USERS
 -- INSERT INTO users (username, email, password) VALUES
 -- ('admin', 'admin@fasco.com', 'hashed_password_123'),
@@ -104,7 +105,7 @@ CREATE TABLE IF NOT EXISTS invoices (
 -- ('staff', 'staff@fasco.com', 'hashed_password_789');
 
 -- -- CUSTOMERS
--- INSERT INTO customers (name, phone, pay_type) VALUES
+-- INSERT INTO customers (name, phone, payment_method) VALUES
 -- ('Ramesh Fire Solutions', '9876543210', 'Credit'),
 -- ('Metro Mall Security', '9765432109', 'Cash'),
 -- ('Green Heights Apartments', '9123456780', 'Online'),

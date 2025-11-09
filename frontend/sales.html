@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — Sales & Billing</title>
+  <title>Fasco – Sales & Billing</title>
   <style>
     :root{
       --bg:#f6f8fb;
@@ -27,8 +27,6 @@
       height: 100vh;
       overflow: hidden;
     }
-
-    /* REMOVED body.menu-open #main-body::before */
 
     .navbar{
       display:flex;
@@ -58,8 +56,6 @@
     .btn.success{background:var(--success);color:white;border:none}
     .btn.small{padding:6px 10px;font-size:12px}
 
-    /* --- Modern Version --- */
-
     .hamburger {
       border: 0;
       background: none;
@@ -69,8 +65,6 @@
       display: inline-flex;
       flex-direction: column;
       justify-content: center;
-      
-      /* Use gap for spacing instead of margin */
       gap: 6px; 
     }
 
@@ -78,7 +72,6 @@
       width: 22px;
       height: 2px;
       background: #111827;
-      /* No margin needed! */
       transition: transform 0.2s ease, opacity 0.2s ease;
       backface-visibility: hidden;
     }
@@ -87,7 +80,6 @@
     .hamburger.open .line:nth-child(2){opacity:0}
     .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
 
-    /* UPDATED mobile-menu styles to match inventory.html */
     .mobile-menu{
       display: flex; 
       flex-direction: column;
@@ -116,12 +108,9 @@
       transform: translateX(0);
     }
     
-    /* UPDATED menu-overlay to match inventory.html */
     #menu-overlay {
       display: none;
     }
-
-    /* REMOVED #menu-overlay.open */
 
     .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
 
@@ -130,7 +119,7 @@
       flex-direction: column;
       padding:20px;
       height:100%;
-      overflow-y:auto;
+      overflow: hidden;
       width: 100%;
     }
 
@@ -139,31 +128,34 @@
         color: rgb(153, 30, 30);
     }
 
-    /* UPDATED #main-body styles to match inventory.html */
     #main-body {
       flex-grow: 1;
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* ADDED #main-body.pushed from inventory.html */
     #main-body.pushed {
       margin-left: 280px;
     }
 
-    /* Sales Page Layout */
     .sales-layout{
       display:grid;
       grid-template-columns:1fr 400px;
       gap:20px;
-      height:calc(100vh - 120px);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .product-section{
       display:flex;
       flex-direction:column;
       gap:16px;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .search-bar{
@@ -174,6 +166,7 @@
       display:flex;
       gap:8px;
       align-items:center;
+      flex-shrink: 0;
     }
 
     .search-bar input{
@@ -210,8 +203,27 @@
       border-radius:12px;
       box-shadow:var(--shadow);
       padding:16px;
-      overflow-y:auto;
       flex:1;
+      overflow-y:auto;
+      min-height: 0;
+    }
+
+    .products-grid::-webkit-scrollbar{
+      width:10px;
+    }
+
+    .products-grid::-webkit-scrollbar-track{
+      background:#f1f1f1;
+      border-radius:10px;
+    }
+
+    .products-grid::-webkit-scrollbar-thumb{
+      background:#9ca3af;
+      border-radius:10px;
+    }
+
+    .products-grid::-webkit-scrollbar-thumb:hover{
+      background:#6b7280;
     }
 
     .product-grid{
@@ -301,11 +313,12 @@
       margin-bottom:6px;
     }
 
-    /* Cart Section */
     .cart-section{
       display:flex;
       flex-direction:column;
       gap:12px;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .cart-card{
@@ -316,6 +329,7 @@
       display:flex;
       flex-direction:column;
       height:100%;
+      overflow: hidden;
     }
 
     .cart-header{
@@ -325,6 +339,7 @@
       margin-bottom:16px;
       padding-bottom:12px;
       border-bottom:2px solid #f3f4f6;
+      flex-shrink: 0;
     }
 
     .cart-header h3{
@@ -339,11 +354,61 @@
       font-weight:600;
     }
 
+    .customer-info{
+      padding:12px 0;
+      border-bottom:2px solid #f3f4f6;
+      margin-bottom:12px;
+      flex-shrink: 0;
+    }
+
+    .form-group{
+      margin-bottom:10px;
+    }
+
+    .form-group label{
+      display:block;
+      font-size:12px;
+      font-weight:600;
+      margin-bottom:4px;
+      color:#374151;
+    }
+
+    .form-group input,.form-group select{
+      width:100%;
+      padding:8px 10px;
+      border:1px solid #e5e7eb;
+      border-radius:6px;
+      font-size:13px;
+    }
+
+    .form-group input:focus,.form-group select:focus{
+      outline:none;
+      border-color:var(--accent);
+    }
+
     .cart-items{
       flex:1;
       overflow-y:auto;
       margin-bottom:16px;
-      max-height:calc(100vh - 520px);
+      min-height: 0;
+    }
+
+    .cart-items::-webkit-scrollbar{
+      width:8px;
+    }
+
+    .cart-items::-webkit-scrollbar-track{
+      background:#f1f1f1;
+      border-radius:10px;
+    }
+
+    .cart-items::-webkit-scrollbar-thumb{
+      background:#9ca3af;
+      border-radius:10px;
+    }
+
+    .cart-items::-webkit-scrollbar-thumb:hover{
+      background:#6b7280;
     }
 
     .cart-item{
@@ -417,40 +482,10 @@
       font-size:14px;
     }
 
-    .customer-info{
-      padding:12px 0;
-      border-bottom:2px solid #f3f4f6;
-      margin-bottom:12px;
-    }
-
-    .form-group{
-      margin-bottom:10px;
-    }
-
-    .form-group label{
-      display:block;
-      font-size:12px;
-      font-weight:600;
-      margin-bottom:4px;
-      color:#374151;
-    }
-
-    .form-group input,.form-group select{
-      width:100%;
-      padding:8px 10px;
-      border:1px solid #e5e7eb;
-      border-radius:6px;
-      font-size:13px;
-    }
-
-    .form-group input:focus,.form-group select:focus{
-      outline:none;
-      border-color:var(--accent);
-    }
-
     .cart-summary{
       border-top:2px solid #f3f4f6;
       padding-top:12px;
+      flex-shrink: 0;
     }
 
     .summary-row{
@@ -474,6 +509,7 @@
       flex-direction:column;
       gap:8px;
       margin-top:12px;
+      flex-shrink: 0;
     }
 
     .empty-cart{
@@ -487,7 +523,6 @@
       margin-bottom:12px;
     }
 
-    /* Invoice Modal */
     .modal{
       display:none;
       position:fixed;

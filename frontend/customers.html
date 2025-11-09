@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — User Management</title>
+  <title>Fasco — Customers</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -108,7 +108,7 @@
     }
     
     /* This is the new active link style */
-    #users {
+    #customers {
       font-size: large;
       color: rgb(153, 30, 30);
     }
@@ -123,7 +123,7 @@
       margin-left: 280px;
     }
 
-    /* User Page Specific Styles (Copied from inventory.html) */
+    /* Page Styles */
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -134,23 +134,44 @@
       margin: 0;
       font-size: 24px;
     }
-
-    .user-table-container {
+    
+    .search-filter-bar{
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .search-box{
+      flex:1;
+      position:relative;
+    }
+    .search-box input{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      font-size:14px;
+    }
+    
+    .customer-table-container {
       background: var(--card);
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-
-    .user-table {
+    .customer-table {
       width: 100%;
       border-collapse: collapse;
     }
-    .user-table thead {
+    .customer-table thead {
       background: #f9fafb;
       border-bottom: 2px solid #e5e7eb;
     }
-    .user-table th {
+    .customer-table th {
       text-align: left;
       padding: 14px 16px;
       font-size: 13px;
@@ -159,16 +180,19 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .user-table td {
+    .customer-table td {
       padding: 14px 16px;
       border-bottom: 1px solid #f3f4f6;
       font-size: 14px;
     }
-    .user-table tbody tr:hover {
+    .customer-table tbody tr:hover {
       background: #f9fafb;
     }
+    .customer-table th.right, .customer-table td.right {
+      text-align: right;
+    }
 
-    /* New styles for admin/staff roles */
+    /* Status Badge Styles */
     .status-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -176,34 +200,13 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .status-badge.admin {
-      background: #dbeafe;
-      color: #1e40af;
+    .status-badge.Paid {
+      background: #d1fae5;
+      color: #065f46;
     }
-    .status-badge.staff {
-      background: #f3f4f6;
-      color: #374151;
-    }
-
-    .action-btns {
-      display: flex;
-      gap: 6px;
-    }
-    .icon-btn {
-      padding: 6px 8px;
-      border: 1px solid #e5e7eb;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all .2s;
-    }
-    .icon-btn:hover {
-      background: #f3f4f6;
-    }
-    .icon-btn.delete:hover {
-      border-color: var(--danger);
-      color: var(--danger);
+    .status-badge.Pending {
+      background: #fed7aa;
+      color: #92400e;
     }
 
     /* Modal Styles */
@@ -225,20 +228,24 @@
     .modal-content {
       background: white;
       border-radius: 12px;
-      padding: 28px;
-      max-width: 500px;
+      padding: 0;
+      max-width: 600px;
       width: 90%;
       max-height: 90vh;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      padding: 20px 28px;
+      border-bottom: 1px solid #e5e7eb;
     }
     .modal-header h3 {
       margin: 0;
+      font-size: 18px;
     }
     .close-btn {
       background: none;
@@ -247,33 +254,37 @@
       cursor: pointer;
       color: var(--muted);
     }
-    .form-group {
-      margin-bottom: 16px;
+    .modal-body {
+      padding: 28px;
     }
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      font-size: 14px;
-    }
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .form-actions {
+    .modal-actions {
+      padding: 20px 28px;
+      border-top: 1px solid #e5e7eb;
       display: flex;
-      gap: 10px;
       justify-content: flex-end;
-      margin-top: 24px;
+      background: #f9fafb;
+    }
+    
+    .history-table {
+      width:100%;
+      border-collapse: collapse;
+    }
+    .history-table th {
+      background: #f9fafb;
+      padding: 10px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .history-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .history-table th.right, .history-table td.right {
+      text-align: right;
     }
   </style>
 </head>
@@ -297,19 +308,18 @@
       </div>
     </div>
 
-    <!-- Added 'Users' to the nav -->
     <nav class="nav-links" aria-label="Primary">
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Inventory</a>
       <a href="sales.html">Sales</a>
       <a href="orders.html">Orders</a>
-      <a id="users" href="users.html">Users</a>
-      <a href="customers.html">Customers</a>
+      <a href="users.html">Users</a>
+      <a id="customers" href="customers.html">Customers</a>
     </nav>
 
     <div class="actions">
       <button class="btn">Profile</button>
-      <button class="btn primary">New Invoice</button>
+      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
       <button class="btn danger" id="logoutBtn">Log Out</button>
     </div>
   </header>
@@ -328,23 +338,30 @@
 
     <div class="container">
       <div class="page-header">
-        <h2>User Management</h2>
-        <button class="btn primary" onclick="openAddModal()">+ Add User</button>
+        <h2>Customer Management</h2>
       </div>
 
-      <!-- User Table -->
-      <div class="user-table-container">
-        <table class="user-table" id="userTable">
+      <!-- Search and Filter Bar -->
+      <div class="search-filter-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search by Customer Name or Phone..." onkeyup="filterTable()">
+        </div>
+      </div>
+
+      <!-- Customer Table -->
+      <div class="customer-table-container">
+        <table class="customer-table" id="customerTable">
           <thead>
             <tr>
-              <th>User ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
+              <th>Customer Name</th>
+              <th>Phone</th>
+              <th>Last Payment</th>
+              <th class="right">Total Orders</th>
+              <th class="right">Total Spent</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="usersBody">
+          <tbody id="customersBody">
             <!-- Rows will be populated by JavaScript -->
           </tbody>
         </table>
@@ -352,58 +369,34 @@
     </div>
   </div>
 
-  <!-- Add User Modal -->
-  <div class="modal" id="userModal">
+  <!-- Customer Order History Modal -->
+  <div class="modal" id="historyModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalTitle">Add New User</h3>
+        <h3 id="modalTitle">Customer History</h3>
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
-      <form id="userForm" onsubmit="saveUser(event)">
-        
-        <div class="form-group">
-          <label>Username*</label>
-          <input type="text" id="username" required>
-        </div>
-
-        <div class="form-group">
-          <label>Email*</label>
-          <input type="email" id="email" required>
-        </div>
-
-        <div class="form-group">
-          <label>Password*</label>
-          <input type="password" id="password" required minlength="6" placeholder="Min 6 characters">
-        </div>
-        
-        <div class="form-group">
-          <label>Role*</label>
-          <select id="role" required>
-            <option value="staff">Staff</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn primary">Save User</button>
-        </div>
-      </form>
+      <div class="modal-body" id="modalBody">
+        <!-- Details will be populated by JavaScript -->
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Close</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const API_URL = "http://localhost:5000/api/users";
-    const userModal = document.getElementById("userModal");
-    const userForm = document.getElementById("userForm");
-    const modalTitle = document.getElementById("modalTitle");
-    const tbody = document.getElementById('usersBody');
+    const API_URL = "http://localhost:5000/api/customers";
+    const historyModal = document.getElementById("historyModal");
+    const tbody = document.getElementById('customersBody');
+    const modalBody = document.getElementById('modalBody');
+    const modalTitle = document.getElementById('modalTitle');
     
-    let users = [];
+    let allCustomers = []; // To store the full list
     const token = localStorage.getItem('token'); // Get the token from login
 
     // --- Primary Data Function ---
-    async function fetchUsers() {
+    async function fetchCustomers() {
       if (!token) {
         handleAuthError();
         return;
@@ -411,7 +404,7 @@
 
       try {
         const res = await fetch(API_URL, {
-          headers: { 'x-auth-token': token } // Send token in header
+          headers: { 'x-auth-token': token } // Send token
         });
 
         if (res.status === 401 || res.status === 403) {
@@ -419,35 +412,41 @@
           return;
         }
 
-        users = await res.json();
+        allCustomers = await res.json();
         renderTable();
 
       } catch (err) {
-        console.error("Error fetching users:", err);
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Error loading data. Is the server running?</td></tr>`;
+        console.error("Error fetching customers:", err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Error loading data. Is the server running?</td></tr>`;
       }
     }
 
-    // --- Render Functions ---
+    // --- Render Table ---
     function renderTable() {
       tbody.innerHTML = '';
-      if (users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;">No users found.</td></tr>`;
+      if (allCustomers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">No customers found.</td></tr>`;
+        return;
+      }
+      
+      const filteredCustomers = filterCustomers(); // Apply search
+
+      if (filteredCustomers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">No customers match your search.</td></tr>`;
         return;
       }
 
-      users.forEach(user => {
-        const roleClass = user.role === 'admin' ? 'admin' : 'staff';
+      filteredCustomers.forEach(customer => {
+        const totalSpent = parseFloat(customer.total_spent || 0);
         const row = `
           <tr>
-            <td>${user.id}</td>
-            <td><strong>${user.username}</strong></td>
-            <td>${user.email}</td>
-            <td><span class="status-badge ${roleClass}">${user.role}</span></td>
+            <td><strong>${customer.name}</strong></td>
+            <td>${customer.phone || 'N/A'}</td>
+            <td>${customer.payment_method || 'N/A'}</td>
+            <td class="right">${customer.total_orders || 0}</td>
+            <td class="right"><strong>₹${totalSpent.toLocaleString('en-IN')}</strong></td>
             <td>
-              <div class="action-btns">
-                <button class="icon-btn delete" onclick="deleteUser(${user.id})" title="Delete">🗑️</button>
-              </div>
+              <button class="btn small primary" onclick="openHistoryModal(${customer.id}, '${customer.name}')">View History</button>
             </td>
           </tr>
         `;
@@ -455,83 +454,103 @@
       });
     }
 
-    // --- CRUD Functions ---
-    async function saveUser(e) {
-      e.preventDefault();
-      
-      const userData = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value,
-        role: document.getElementById('role').value
-      };
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-auth-token': token 
-          },
-          body: JSON.stringify(userData)
-        });
-
-        const data = await res.json();
-        if (data.error) {
-          alert("Error: " + data.error);
-        } else {
-          fetchUsers(); // Refresh the table
-          closeModal();
-        }
-      } catch (err) {
-        alert("An error occurred: " + err.message);
-      }
+    // --- Filtering ---
+    function filterTable() {
+      renderTable(); // Re-render the table with current filter values
     }
 
-    async function deleteUser(id) {
-      if (confirm('Are you sure you want to delete this user?')) {
-        try {
-          const res = await fetch(`${API_URL}/${id}`, {
-            method: "DELETE",
-            headers: { 'x-auth-token': token }
-          });
-          
-          const data = await res.json();
-          if (data.error) {
-            alert("Error: " + data.error);
-          } else {
-            fetchUsers(); // Refresh the table
-          }
-        } catch (err) {
-           alert("An error occurred: " + err.message);
-        }
+    function filterCustomers() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+      if (!searchTerm) {
+        return allCustomers;
       }
+
+      return allCustomers.filter(customer => {
+        const matchesName = customer.name && customer.name.toLowerCase().includes(searchTerm);
+        const matchesPhone = customer.phone && customer.phone.toLowerCase().includes(searchTerm);
+        return matchesName || matchesPhone;
+      });
     }
 
     // --- Modal Functions ---
-    function openAddModal() {
-      userForm.reset();
-      document.getElementById('role').value = 'staff'; // Default to staff
-      modalTitle.textContent = 'Add New User';
-      userModal.classList.add('show');
+    async function openHistoryModal(customerId, customerName) {
+      modalTitle.textContent = `Order History for ${customerName}`;
+      modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading history...</p>';
+      historyModal.classList.add('show');
+
+      try {
+        const res = await fetch(`${API_URL}/${customerId}/orders`, {
+          headers: { 'x-auth-token': token }
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(true);
+          return;
+        }
+        
+        const history = await res.json();
+        if (history.error) throw new Error(history.error);
+        
+        populateModal(history);
+
+      } catch (err) {
+        console.error("Error fetching customer history:", err);
+        modalBody.innerHTML = `<p style="text-align:center;color:red;">Error loading history.</p>`;
+      }
+    }
+    
+    function populateModal(history) {
+      if (history.length === 0) {
+        modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">This customer has no order history.</p>';
+        return;
+      }
+
+      const itemsHtml = history.map(order => `
+        <tr>
+          <td><strong>${order.invoice_number || `#${order.id}`}</strong></td>
+          <td>${new Date(order.order_date).toLocaleDateString('en-IN')}</td>
+          <td class="right"><strong>₹${parseFloat(order.total_amount).toLocaleString('en-IN')}</strong></td>
+          <td><span class="status-badge ${order.payment_status}">${order.payment_status}</span></td>
+        </tr>
+      `).join('');
+
+      modalBody.innerHTML = `
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Date</th>
+              <th class="right">Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+      `;
     }
 
     function closeModal() {
-      userModal.classList.remove('show');
+      historyModal.classList.remove('show');
+      modalBody.innerHTML = '';
     }
 
     // --- Auth Error Handling ---
-    function handleAuthError() {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;padding:20px;">
-        <strong>Access Denied.</strong><br>
-        You must be an admin to view this page.<br>
-        Please log in as an admin.
+    function handleAuthError(isModal = false) {
+      const errorHtml = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">
+        <strong>Access Denied.</strong> You must be an admin to view this page.
         </td></tr>`;
-      // Optionally redirect
-      // setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+      
+      if (isModal) {
+        modalBody.innerHTML = errorHtml.replace('colspan="6"', '');
+      } else {
+        tbody.innerHTML = errorHtml;
+      }
     }
     
-    // --- Mobile Menu ---
+    // --- Mobile Menu & Logout ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -552,15 +571,14 @@
         mainBody.classList.remove('pushed');
       }
     });
+    
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
 
     // --- Initialize ---
-    document.addEventListener('DOMContentLoaded', fetchUsers);
-
-    // --- Log Out Button ---
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('token'); // Clear the token
-      window.location.href = 'login.html'; // Go back to login page
-    });
+    document.addEventListener('DOMContentLoaded', fetchCustomers);
 
   </script>
 </body>

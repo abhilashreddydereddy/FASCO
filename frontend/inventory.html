@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — Inventory</title>
+  <title>Fasco – Inventory</title>
   <style>
     :root{
       --bg:#f6f8fb;
@@ -55,8 +55,6 @@
     .btn.danger{background:var(--danger);color:white;border:none}
     .btn.small{padding:6px 10px;font-size:12px}
 
-    /* --- Modern Version --- */
-
     .hamburger {
       border: 0;
       background: none;
@@ -66,8 +64,6 @@
       display: inline-flex;
       flex-direction: column;
       justify-content: center;
-      
-      /* Use gap for spacing instead of margin */
       gap: 6px; 
     }
 
@@ -75,7 +71,6 @@
       width: 22px;
       height: 2px;
       background: #111827;
-      /* No margin needed! */
       transition: transform 0.2s ease, opacity 0.2s ease;
       backface-visibility: hidden;
     }
@@ -116,7 +111,7 @@
       flex-direction: column;
       padding:20px;
       height:100%;
-      overflow-y:auto;
+      overflow:hidden;
       width: 100%;
     }
 
@@ -137,6 +132,8 @@
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
     }
 
     #main-body.pushed {
@@ -149,6 +146,7 @@
       justify-content:space-between;
       align-items:center;
       margin-bottom:24px;
+      flex-shrink: 0;
     }
     
     .inventory-header h2{
@@ -166,6 +164,7 @@
       gap:12px;
       flex-wrap:wrap;
       align-items:center;
+      flex-shrink: 0;
     }
 
     .search-box{
@@ -215,6 +214,7 @@
       grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
       gap:16px;
       margin-bottom:24px;
+      flex-shrink: 0;
     }
 
     .stat-card{
@@ -246,6 +246,35 @@
       border-radius:12px;
       box-shadow:var(--shadow);
       overflow:hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .table-wrapper{
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .table-wrapper::-webkit-scrollbar{
+      width:10px;
+      height:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track{
+      background:#f1f1f1;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb{
+      background:#9ca3af;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover{
+      background:#6b7280;
     }
 
     .inventory-table{
@@ -256,6 +285,9 @@
     .inventory-table thead{
       background:#f9fafb;
       border-bottom:2px solid #e5e7eb;
+      position:sticky;
+      top:0;
+      z-index:10;
     }
 
     .inventory-table th{
@@ -417,7 +449,6 @@
       .inventory-header{flex-direction:column;align-items:flex-start;gap:12px}
       .search-filter-bar{flex-direction:column}
       .search-box{min-width:100%}
-      .inventory-table-container{overflow-x:auto}
       .inventory-table{min-width:800px}
       .stats-grid{grid-template-columns:1fr}
     }
@@ -528,23 +559,25 @@
 
       <!-- Inventory Table -->
       <div class="inventory-table-container">
-        <table class="inventory-table" id="inventoryTable">
-          <thead>
-            <tr>
-              <th>Product Code</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Unit</th>
-              <th>Price (₹)</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="inventoryBody">
-            <!-- Table rows will be populated by JavaScript -->
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="inventory-table" id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Unit</th>
+                <th>Price (₹)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryBody">
+              <!-- Table rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

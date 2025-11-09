@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — Customers</title>
+  <title>Fasco – Customers</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -98,7 +98,16 @@
     }
     .mobile-menu a { padding: 8px 0; color: var(--muted); text-decoration: none }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; height: 100%; overflow-y: auto }
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     
     .card-image {
       max-width: 100%;
@@ -107,7 +116,6 @@
       border-radius: 6px;
     }
     
-    /* This is the new active link style */
     #customers {
       font-size: large;
       color: rgb(153, 30, 30);
@@ -118,17 +126,19 @@
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
     }
     #main-body.pushed {
       margin-left: 280px;
     }
 
-    /* Page Styles */
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
+      flex-shrink: 0;
     }
     .page-header h2 {
       margin: 0;
@@ -144,6 +154,7 @@
       display:flex;
       gap:12px;
       align-items:center;
+      flex-shrink: 0;
     }
     .search-box{
       flex:1;
@@ -162,7 +173,37 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
+
+    .table-wrapper{
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .table-wrapper::-webkit-scrollbar{
+      width:10px;
+      height:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track{
+      background:#f1f1f1;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb{
+      background:#9ca3af;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover{
+      background:#6b7280;
+    }
+
     .customer-table {
       width: 100%;
       border-collapse: collapse;
@@ -170,6 +211,9 @@
     .customer-table thead {
       background: #f9fafb;
       border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .customer-table th {
       text-align: left;
@@ -192,7 +236,6 @@
       text-align: right;
     }
 
-    /* Status Badge Styles */
     .status-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -209,7 +252,6 @@
       color: #92400e;
     }
 
-    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -341,35 +383,33 @@
         <h2>Customer Management</h2>
       </div>
 
-      <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
         <div class="search-box">
           <input type="text" id="searchInput" placeholder="Search by Customer Name or Phone..." onkeyup="filterTable()">
         </div>
       </div>
 
-      <!-- Customer Table -->
       <div class="customer-table-container">
-        <table class="customer-table" id="customerTable">
-          <thead>
-            <tr>
-              <th>Customer Name</th>
-              <th>Phone</th>
-              <th>Last Payment</th>
-              <th class="right">Total Orders</th>
-              <th class="right">Total Spent</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="customersBody">
-            <!-- Rows will be populated by JavaScript -->
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="customer-table" id="customerTable">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Last Payment</th>
+                <th class="right">Total Orders</th>
+                <th class="right">Total Spent</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersBody">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Customer Order History Modal -->
   <div class="modal" id="historyModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -377,7 +417,6 @@
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body" id="modalBody">
-        <!-- Details will be populated by JavaScript -->
       </div>
       <div class="modal-actions">
         <button type="button" class="btn" onclick="closeModal()">Close</button>
@@ -392,10 +431,9 @@
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
     
-    let allCustomers = []; // To store the full list
-    const token = localStorage.getItem('token'); // Get the token from login
+    let allCustomers = [];
+    const token = localStorage.getItem('token');
 
-    // --- Primary Data Function ---
     async function fetchCustomers() {
       if (!token) {
         handleAuthError();
@@ -404,7 +442,7 @@
 
       try {
         const res = await fetch(API_URL, {
-          headers: { 'x-auth-token': token } // Send token
+          headers: { 'x-auth-token': token }
         });
 
         if (res.status === 401 || res.status === 403) {
@@ -421,7 +459,6 @@
       }
     }
 
-    // --- Render Table ---
     function renderTable() {
       tbody.innerHTML = '';
       if (allCustomers.length === 0) {
@@ -429,7 +466,7 @@
         return;
       }
       
-      const filteredCustomers = filterCustomers(); // Apply search
+      const filteredCustomers = filterCustomers();
 
       if (filteredCustomers.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">No customers match your search.</td></tr>`;
@@ -454,9 +491,8 @@
       });
     }
 
-    // --- Filtering ---
     function filterTable() {
-      renderTable(); // Re-render the table with current filter values
+      renderTable();
     }
 
     function filterCustomers() {
@@ -473,7 +509,6 @@
       });
     }
 
-    // --- Modal Functions ---
     async function openHistoryModal(customerId, customerName) {
       modalTitle.textContent = `Order History for ${customerName}`;
       modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading history...</p>';
@@ -537,7 +572,6 @@
       modalBody.innerHTML = '';
     }
 
-    // --- Auth Error Handling ---
     function handleAuthError(isModal = false) {
       const errorHtml = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">
         <strong>Access Denied.</strong> You must be an admin to view this page.
@@ -550,7 +584,6 @@
       }
     }
     
-    // --- Mobile Menu & Logout ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -577,7 +610,6 @@
       window.location.href = 'login.html';
     });
 
-    // --- Initialize ---
     document.addEventListener('DOMContentLoaded', fetchCustomers);
 
   </script>

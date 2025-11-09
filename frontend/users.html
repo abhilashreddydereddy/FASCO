@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — User Management</title>
+  <title>Fasco – User Management</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -98,7 +98,16 @@
     }
     .mobile-menu a { padding: 8px 0; color: var(--muted); text-decoration: none }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; height: 100%; overflow-y: auto }
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     
     .card-image {
       max-width: 100%;
@@ -107,7 +116,6 @@
       border-radius: 6px;
     }
     
-    /* This is the new active link style */
     #users {
       font-size: large;
       color: rgb(153, 30, 30);
@@ -118,17 +126,19 @@
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
     }
     #main-body.pushed {
       margin-left: 280px;
     }
 
-    /* User Page Specific Styles (Copied from inventory.html) */
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
+      flex-shrink: 0;
     }
     .page-header h2 {
       margin: 0;
@@ -140,6 +150,35 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .table-wrapper{
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .table-wrapper::-webkit-scrollbar{
+      width:10px;
+      height:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track{
+      background:#f1f1f1;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb{
+      background:#9ca3af;
+      border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb:hover{
+      background:#6b7280;
     }
 
     .user-table {
@@ -149,6 +188,9 @@
     .user-table thead {
       background: #f9fafb;
       border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .user-table th {
       text-align: left;
@@ -168,7 +210,6 @@
       background: #f9fafb;
     }
 
-    /* New styles for admin/staff roles */
     .status-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -206,7 +247,6 @@
       color: var(--danger);
     }
 
-    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -297,7 +337,6 @@
       </div>
     </div>
 
-    <!-- Added 'Users' to the nav -->
     <nav class="nav-links" aria-label="Primary">
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Inventory</a>
@@ -332,27 +371,26 @@
         <button class="btn primary" onclick="openAddModal()">+ Add User</button>
       </div>
 
-      <!-- User Table -->
       <div class="user-table-container">
-        <table class="user-table" id="userTable">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersBody">
-            <!-- Rows will be populated by JavaScript -->
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="user-table" id="userTable">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Add User Modal -->
   <div class="modal" id="userModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -400,9 +438,8 @@
     const tbody = document.getElementById('usersBody');
     
     let users = [];
-    const token = localStorage.getItem('token'); // Get the token from login
+    const token = localStorage.getItem('token');
 
-    // --- Primary Data Function ---
     async function fetchUsers() {
       if (!token) {
         handleAuthError();
@@ -411,7 +448,7 @@
 
       try {
         const res = await fetch(API_URL, {
-          headers: { 'x-auth-token': token } // Send token in header
+          headers: { 'x-auth-token': token }
         });
 
         if (res.status === 401 || res.status === 403) {
@@ -428,7 +465,6 @@
       }
     }
 
-    // --- Render Functions ---
     function renderTable() {
       tbody.innerHTML = '';
       if (users.length === 0) {
@@ -455,7 +491,6 @@
       });
     }
 
-    // --- CRUD Functions ---
     async function saveUser(e) {
       e.preventDefault();
       
@@ -480,7 +515,7 @@
         if (data.error) {
           alert("Error: " + data.error);
         } else {
-          fetchUsers(); // Refresh the table
+          fetchUsers();
           closeModal();
         }
       } catch (err) {
@@ -500,7 +535,7 @@
           if (data.error) {
             alert("Error: " + data.error);
           } else {
-            fetchUsers(); // Refresh the table
+            fetchUsers();
           }
         } catch (err) {
            alert("An error occurred: " + err.message);
@@ -508,10 +543,9 @@
       }
     }
 
-    // --- Modal Functions ---
     function openAddModal() {
       userForm.reset();
-      document.getElementById('role').value = 'staff'; // Default to staff
+      document.getElementById('role').value = 'staff';
       modalTitle.textContent = 'Add New User';
       userModal.classList.add('show');
     }
@@ -520,18 +554,14 @@
       userModal.classList.remove('show');
     }
 
-    // --- Auth Error Handling ---
     function handleAuthError() {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;padding:20px;">
         <strong>Access Denied.</strong><br>
         You must be an admin to view this page.<br>
         Please log in as an admin.
         </td></tr>`;
-      // Optionally redirect
-      // setTimeout(() => { window.location.href = 'login.html'; }, 3000);
     }
     
-    // --- Mobile Menu ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -553,13 +583,11 @@
       }
     });
 
-    // --- Initialize ---
     document.addEventListener('DOMContentLoaded', fetchUsers);
 
-    // --- Log Out Button ---
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('token'); // Clear the token
-      window.location.href = 'login.html'; // Go back to login page
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
     });
 
   </script>

@@ -6,10 +6,11 @@ const {
   loginUser,
   getAllUsers,
   createUserByAdmin,
-  deleteUser
+  deleteUser,
+  changePassword // <-- IMPORT THE NEW FUNCTION
 } = require("../controllers/userController");
 
-// Import our new middleware
+// Import our auth middleware
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
@@ -20,15 +21,19 @@ router.post("/login", loginUser);
 
 // --- Admin-Only Routes ---
 // (Only logged-in admins can access these)
-const adminAuth = [authMiddleware, adminMiddleware];
+const adminAccess = [authMiddleware, adminMiddleware];
 
 // GET /api/users/ (Get all users)
-router.get("/", adminAuth, getAllUsers);
+router.get("/", adminAccess, getAllUsers);
 
 // POST /api/users/ (Admin creates a new user)
-router.post("/", adminAuth, createUserByAdmin);
+router.post("/", adminAccess, createUserByAdmin);
 
 // DELETE /api/users/:id (Admin deletes a user)
-router.delete("/:id", adminAuth, deleteUser);
+router.delete("/:id", adminAccess, deleteUser);
+
+// --- NEW LOGGED-IN USER ROUTE ---
+// (Any logged-in user can change their own password)
+router.post("/change-password", authMiddleware, changePassword);
 
 module.exports = router;

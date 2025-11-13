@@ -1,38 +1,43 @@
+// backend/controllers/dashboardController.js
 const pool = require("../config/db");
 
-// 🧩 Get all products (for dashboard)
-exports.getDashboardProducts = async (req, res) => {
+// This is the new single function for the dashboard
+exports.getDashboardData = async (req, res) => {
+  const client = await pool.connect();
   try {
-    const result = await pool.query("SELECT * FROM products ORDER BY id ASC");
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error fetching dashboard products:", err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// 🧾 Get all orders with customer names and item counts
-exports.getDashboardOrders = async (req, res) => {
-  try {
-    const query = `
+    // We will run both queries in parallel
+    const productsQuery = "SELECT * FROM products ORDER BY id ASC";
+    
+    const ordersQuery = `
       SELECT 
         o.id,
         o.order_date,
-        o.subtotal,
-        o.tax,
         o.total_amount,
         c.name AS customer_name,
-        COUNT(oi.id) AS item_count
+        i.payment_status,
+        (SELECT COUNT(oi.id) FROM order_items oi WHERE oi.order_id = o.id) AS item_count
       FROM orders o
       LEFT JOIN customers c ON o.customer_id = c.id
-      LEFT JOIN order_items oi ON o.id = oi.order_id
-      GROUP BY o.id, c.name
+      LEFT JOIN invoices i ON o.id = i.order_id
       ORDER BY o.order_date DESC;
     `;
-    const result = await pool.query(query);
-    res.json(result.rows);
+
+    // Run both queries
+    const [productsRes, ordersRes] = await Promise.all([
+      client.query(productsQuery),
+      client.query(ordersQuery)
+    ]);
+
+    // Send back the single JSON object that home.html expects
+    res.json({
+      products: productsRes.rows,
+      orders: ordersRes.rows
+    });
+
   } catch (err) {
-    console.error("Error fetching dashboard orders:", err);
+    console.error("Error fetching dashboard data:", err);
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 };

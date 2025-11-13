@@ -15,7 +15,9 @@ exports.getSalesProducts = async (req, res) => {
 
 // Create a new Sale (Order, Invoice, etc.)
 exports.createSale = async (req, res) => {
-  const { customerName, customerPhone, payment_method, cart, subtotal, tax, total } = req.body;
+  // --- UPDATED ---
+  // We no longer receive 'subtotal' or 'tax'. We only get the final 'total'.
+  const { customerName, customerPhone, payment_method, cart, total } = req.body;
 
   // 1. Get a connection client from the pool
   const client = await pool.connect();
@@ -25,19 +27,18 @@ exports.createSale = async (req, res) => {
     await client.query("BEGIN");
 
     // 3. Create or find the customer
-    // We can make this smarter later (e.g., find by phone)
-    // For now, we just create a new customer for every sale
     const customerRes = await client.query(
-    "INSERT INTO customers (name, phone, payment_method) VALUES ($1, $2, $3) RETURNING id",
-    [customerName, customerPhone || null, payment_method || null]
+      "INSERT INTO customers (name, phone, payment_method) VALUES ($1, $2, $3) RETURNING id",
+      [customerName, customerPhone || null, payment_method]
     );
-
     const customerId = customerRes.rows[0].id;
 
     // 4. Create the order
+    // --- UPDATED ---
+    // Now only inserts the 'total_amount'.
     const orderRes = await client.query(
-      "INSERT INTO orders (customer_id, subtotal, tax, total_amount) VALUES ($1, $2, $3, $4) RETURNING id, order_date",
-      [customerId, subtotal, tax, total]
+      "INSERT INTO orders (customer_id, total_amount) VALUES ($1, $2) RETURNING id, order_date",
+      [customerId, total] // Was: [customerId, subtotal, tax, total]
     );
     const orderId = orderRes.rows[0].id;
     const orderDate = orderRes.rows[0].order_date;
@@ -51,7 +52,6 @@ exports.createSale = async (req, res) => {
       );
 
       // 5b. Update stock in products table
-      // This is the most critical part!
       await client.query(
         "UPDATE products SET stock = stock - $1 WHERE id = $2",
         [item.quantity, item.id]

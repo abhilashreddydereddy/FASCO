@@ -1,9 +1,15 @@
+// backend/routes/dashboardRoutes.js
 const express = require("express");
 const router = express.Router();
-const dashboardController = require("../controllers/dashboardController");
+const { getDashboardData } = require("../controllers/dashboardController");
 
-// Routes used by home.html
-router.get("/products", dashboardController.getDashboardProducts);
-router.get("/orders", dashboardController.getDashboardOrders);
+// Import our auth middleware
+const authMiddleware = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
+const adminAccess = [authMiddleware, adminMiddleware]; // Protect the route
+
+// GET /api/dashboard/
+// This single route provides all data for the dashboard
+router.get("/", adminAccess, getDashboardData);
 
 module.exports = router;

@@ -29,12 +29,11 @@ exports.loginUser = async (req, res) => {
     if (!user.rows.length) return res.status(400).json({ error: "User not found" });
 
     const valid = await bcrypt.compare(password, user.rows[0].password);
-    if (!valid) return res.status(400).json({ error: "Invalid credentials" });
+    if (!valid) return res.status(400).json({ error: "Incorrect password" });
 
-    // --- CRITICAL CHANGE ---
     // We now sign the user's ID AND ROLE into the token
     const token = jwt.sign(
-      { id: user.rows[0].id, role: user.rows[0].role }, // <-- ADDED ROLE
+      { id: user.rows[0].id, role: user.rows[0].role }, 
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -87,5 +86,39 @@ exports.deleteUser = async (req, res) => {
     res.json({ success: true, message: "User deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// --- NEW FUNCTION FOR LOGGED-IN USERS ---
+
+// POST /api/users/change-password
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.id; // Get user ID from the authMiddleware token
+
+  try {
+    // 1. Get the user's current password hash from the DB
+    const user = await pool.query("SELECT password FROM users WHERE id = $1", [userId]);
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    const currentHashedPassword = user.rows[0].password;
+
+    // 2. Check if the 'currentPassword' they typed is correct
+    const validPassword = await bcrypt.compare(currentPassword, currentHashedPassword);
+    if (!validPassword) {
+      return res.status(400).json({ error: "Incorrect current password." });
+    }
+
+    // 3. Hash the new password
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 4. Update the password in the database
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [newHashedPassword, userId]);
+
+    res.json({ success: true, message: "Password updated successfully." });
+
+  } catch (err) {
+    res.status(500).json({ error: "Server error: " + err.message });
   }
 };

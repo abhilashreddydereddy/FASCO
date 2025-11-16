@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco – Order History</title>
+  <title>Fasco — Order History</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -98,16 +98,7 @@
     }
     .mobile-menu a { padding: 8px 0; color: var(--muted); text-decoration: none }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      height: 100%;
-      overflow: hidden;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; height: 100%; overflow-y: auto }
     
     .card-image {
       max-width: 100%;
@@ -116,7 +107,7 @@
       border-radius: 6px;
     }
     
-    #orders {
+    #orders { /* Active link style */
       font-size: large;
       color: rgb(153, 30, 30);
     }
@@ -126,19 +117,17 @@
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
-      display: flex;
-      flex-direction: column;
     }
     #main-body.pushed {
       margin-left: 280px;
     }
 
+    /* Page Styles */
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
-      flex-shrink: 0;
     }
     .page-header h2 {
       margin: 0;
@@ -154,7 +143,6 @@
       display:flex;
       gap:12px;
       align-items:center;
-      flex-shrink: 0;
     }
     .search-box{
       flex:1;
@@ -181,35 +169,6 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .table-wrapper{
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: auto;
-    }
-
-    .table-wrapper::-webkit-scrollbar{
-      width:10px;
-      height:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-track{
-      background:#f1f1f1;
-      border-radius:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb{
-      background:#9ca3af;
-      border-radius:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb:hover{
-      background:#6b7280;
     }
 
     .order-table {
@@ -219,9 +178,6 @@
     .order-table thead {
       background: #f9fafb;
       border-bottom: 2px solid #e5e7eb;
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
     .order-table th {
       text-align: left;
@@ -237,10 +193,14 @@
       border-bottom: 1px solid #f3f4f6;
       font-size: 14px;
     }
+    .order-table th.right, .order-table td.right {
+      text-align: right;
+    }
     .order-table tbody tr:hover {
       background: #f9fafb;
     }
 
+    /* Status Badge Styles */
     .status-badge {
       display: inline-block;
       padding: 4px 10px;
@@ -261,6 +221,7 @@
       color: #991b1b;
     }
 
+    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -375,7 +336,6 @@
       border-top: 2px solid #e5e7eb;
       margin-top: 8px;
     }
-
   </style>
 </head>
 <body>
@@ -404,9 +364,10 @@
       <a id="sales" href="sales.html">Sales</a>
     </nav>
 
+    <!-- NAVBAR CLEANUP -->
     <div class="actions">
       <button class="btn">Profile</button>
-      <button class="btn primary">New Invoice</button>
+      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
       <button class="btn danger" id="logoutBtn">Log Out</button>
     </div>
   </header>
@@ -419,8 +380,9 @@
       <a href="orders.html">Orders</a>
       <a href="users.html">Users</a>
       <a href="customers.html">Customers</a>
-      <a href="#">Reports</a>
-      <a href="#">Settings</a>
+      <a href="suppliers.html">Suppliers</a>
+      <a href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a>
     </div>
 
     <div class="container">
@@ -428,6 +390,7 @@
         <h2>Order History</h2>
       </div>
 
+      <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
         <div class="search-box">
           <input type="text" id="searchInput" placeholder="Search by Invoice # or Customer Name..." onkeyup="filterTable()">
@@ -440,28 +403,29 @@
         </select>
       </div>
 
+      <!-- Order Table -->
       <div class="order-table-container">
-        <div class="table-wrapper">
-          <table class="order-table" id="orderTable">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Invoice #</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="ordersBody">
-            </tbody>
-          </table>
-        </div>
+        <table class="order-table" id="orderTable">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Invoice #</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th class="right">Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <!-- Rows will be populated by JavaScript -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
+  <!-- Order Details Modal -->
   <div class="modal" id="orderModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -469,6 +433,7 @@
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body" id="modalBody">
+        <!-- Details will be populated by JavaScript -->
       </div>
       <div class="modal-actions">
         <button type="button" class="btn" onclick="closeModal()">Close</button>
@@ -483,9 +448,10 @@
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
     
-    let allOrders = [];
-    const token = localStorage.getItem('token');
+    let allOrders = []; // To store the full list
+    const token = localStorage.getItem('token'); // Get the token from login
 
+    // --- Primary Data Function ---
     async function fetchOrders() {
       if (!token) {
         handleAuthError();
@@ -494,7 +460,7 @@
 
       try {
         const res = await fetch(API_URL, {
-          headers: { 'x-auth-token': token }
+          headers: { 'x-auth-token': token } // Send token
         });
 
         if (res.status === 401 || res.status === 403) {
@@ -511,6 +477,7 @@
       }
     }
 
+    // --- Render Table ---
     function renderTable() {
       tbody.innerHTML = '';
       if (allOrders.length === 0) {
@@ -518,7 +485,7 @@
         return;
       }
       
-      const filteredOrders = filterOrders();
+      const filteredOrders = filterOrders(); // Apply filters
 
       if (filteredOrders.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;">No orders match your filters.</td></tr>`;
@@ -526,15 +493,18 @@
       }
 
       filteredOrders.forEach(order => {
-        const orderDate = new Date(order.order_date).toLocaleDateString('en-IN');
+        // KUWAITI CHANGE
+        const orderDate = new Date(order.order_date).toLocaleDateString('en-KW');
         const statusClass = order.payment_status || 'Pending';
+        const total = parseFloat(order.total_amount || 0).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        
         const row = `
           <tr>
             <td><strong>#${order.id}</strong></td>
             <td>${order.invoice_number || 'N/A'}</td>
             <td>${order.customer_name || 'Guest'}</td>
             <td>${orderDate}</td>
-            <td><strong>₹${parseFloat(order.total_amount).toLocaleString('en-IN')}</strong></td>
+            <td class="right"><strong>KD ${total}</strong></td>
             <td><span class="status-badge ${statusClass}">${statusClass}</span></td>
             <td>
               <button class="btn small primary" onclick="openOrderModal(${order.id})">View</button>
@@ -545,8 +515,9 @@
       });
     }
 
+    // --- Filtering ---
     function filterTable() {
-      renderTable();
+      renderTable(); // Re-render the table with current filter values
     }
 
     function filterOrders() {
@@ -564,6 +535,7 @@
       });
     }
 
+    // --- Modal Functions ---
     async function openOrderModal(orderId) {
       modalTitle.textContent = `Loading Order #${orderId}...`;
       modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading details...</p>';
@@ -592,7 +564,8 @@
     
     function populateModal(data) {
       const { details, items } = data;
-      const orderDate = new Date(details.order_date).toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' });
+      // KUWAITI CHANGE
+      const orderDate = new Date(details.order_date).toLocaleString('en-KW', { dateStyle: 'long', timeStyle: 'short' });
       
       modalTitle.textContent = `Details for Invoice ${details.invoice_number}`;
       
@@ -603,8 +576,9 @@
             <span style="font-size:12px;color:var(--muted)">${item.product_code}</span>
           </td>
           <td class="right">${item.quantity}</td>
-          <td class="right">₹${parseFloat(item.price_per_unit).toLocaleString('en-IN')}</td>
-          <td class="right"><strong>₹${parseFloat(item.subtotal).toLocaleString('en-IN')}</strong></td>
+          <!-- KUWAITI CHANGE -->
+          <td class="right">KD ${parseFloat(item.price_per_unit).toLocaleString('en-KW', { minimumFractionDigits: 3 })}</td>
+          <td class="right"><strong>KD ${parseFloat(item.subtotal).toLocaleString('en-KW', { minimumFractionDigits: 3 })}</strong></td>
         </tr>
       `).join('');
 
@@ -637,18 +611,11 @@
           </tbody>
         </table>
 
+        <!-- KUWAITI CHANGE: No Tax -->
         <div class="order-totals">
-          <div class="summary-row">
-            <span>Subtotal:</span>
-            <span>₹${parseFloat(details.subtotal).toLocaleString('en-IN')}</span>
-          </div>
-          <div class="summary-row">
-            <span>Tax (18%):</span>
-            <span>₹${parseFloat(details.tax).toLocaleString('en-IN')}</span>
-          </div>
           <div class="summary-row total">
             <span>Grand Total:</span>
-            <span>₹${parseFloat(details.total_amount).toLocaleString('en-IN')}</span>
+            <span>KD ${parseFloat(details.total_amount).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span>
           </div>
         </div>
       `;
@@ -659,18 +626,20 @@
       modalBody.innerHTML = '';
     }
 
+    // --- Auth Error Handling ---
     function handleAuthError(isModal = false) {
       const errorHtml = `<tr><td colspan="7" style="text-align:center;color:red;padding:20px;">
         <strong>Access Denied.</strong> You must be an admin to view this page.
         </td></tr>`;
       
       if (isModal) {
-        modalBody.innerHTML = errorHtml;
+        modalBody.innerHTML = errorHtml.replace('colspan="7"', '');
       } else {
         tbody.innerHTML = errorHtml;
       }
     }
     
+    // --- Mobile Menu & Logout ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -697,6 +666,7 @@
       window.location.href = 'login.html';
     });
 
+    // --- Initialize ---
     document.addEventListener('DOMContentLoaded', fetchOrders);
 
   </script>

@@ -334,11 +334,8 @@
 
     <nav class="nav-links" aria-label="Primary">
       <a id="dash" href="home.html">Dashboard</a>
-      <a href="inventory.html">Inventory</a>
-      <a href="sales.html">Sales</a>
-      <a href="orders.html">Orders</a>
-      <a href="users.html">Users</a>
-      <a href="customers.html">Customers</a>
+      <a id="inv" href="inventory.html">Inventory</a>
+      <a id="sales" href="sales.html">Sales</a>
     </nav>
 
     <div class="actions">
@@ -353,6 +350,8 @@
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Products</a>
       <a href="sales.html">Sales</a>
+      <a href="orders.html">Orders</a>
+      <a href="users.html">Users</a>
       <a href="customers.html">Customers</a>
       <a href="#">Reports</a>
       <a href="#">Settings</a>
@@ -486,8 +485,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <script>
-    const API_PRODUCTS = "http://localhost:5000/api/dashboard/products";
-    const API_ORDERS = "http://localhost:5000/api/dashboard/orders";
+    const API_DASHBOARD_URL = "http://localhost:5000/api/dashboard";
     
     let products = [];
     let orders = [];

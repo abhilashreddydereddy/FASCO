@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fasco — Settings</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --accent: #1f6feb;
+      --muted: #6b7280;
+      --shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+      --danger: #dc2626;
+      --warning: #f59e0b;
+      --success: #10b981;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    * { box-sizing: border-box }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+      backdrop-filter: blur(6px);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .left-section { display: flex; align-items: center; gap: 12px }
+    .brand { display: flex; align-items: center; gap: 10px }
+    .logo { width: 36px; height: 36px; border-radius: 8px; background: var(--accent); display: inline-grid; place-items: center; color: white; font-weight: 700 }
+    .brand h1 { font-size: 16px; margin: 0 }
+    .nav-links { display: flex; gap: 18px; align-items: center }
+    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 600 }
+    .nav-links a:hover { color: var(--accent) }
+    .actions { display: flex; gap: 12px; align-items: center }
+    .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(15, 23, 42, 0.06); background: var(--card); cursor: pointer; font-size: 14px; font-weight: 500; transition: all .2s }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow) }
+    .btn.primary { background: var(--accent); color: white; border: none }
+    .btn.danger { background: var(--danger); color: white; border: none }
+    .btn.small { padding: 6px 10px; font-size: 12px }
+
+    .hamburger {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+    .hamburger .line {
+      width: 22px;
+      height: 2px;
+      background: #111827;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      backface-visibility: hidden;
+    }
+    .hamburger.open .line:nth-child(1) { transform: translateY(5px) rotate(45deg) }
+    .hamburger.open .line:nth-child(2) { opacity: 0 }
+    .hamburger.open .line:nth-child(3) { transform: translateY(-5px) rotate(-45deg) }
+
+    .mobile-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 28px 20px;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      height: calc(100% - 60px);
+      width: 280px;
+      background: var(--card);
+      z-index: 50;
+      box-shadow: var(--shadow);
+      transform: translateX(-280px);
+      transition: transform 0.3s ease-in-out;
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    .mobile-menu a { padding: 8px 0; color: var(--muted); text-decoration: none }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; height: 100%; overflow-y: auto }
+    
+    .card-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+    }
+    
+    #settings { /* Active link style */
+      font-size: large;
+      color: rgb(153, 30, 30);
+    }
+
+    #main-body {
+      flex-grow: 1;
+      position: relative;
+      overflow: hidden;
+      transition: margin-left 0.3s ease-in-out;
+    }
+    #main-body.pushed {
+      margin-left: 280px;
+    }
+
+    /* Page Styles */
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .settings-card {
+      max-width: 500px;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin: 0 auto; /* Center the card */
+    }
+    .settings-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .settings-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .settings-body {
+      padding: 28px;
+    }
+    .settings-footer {
+      padding: 20px 28px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #f9fafb;
+    }
+
+    .form-group{
+      margin-bottom:16px;
+    }
+    .form-group label{
+      display:block;
+      margin-bottom:6px;
+      font-weight:500;
+      font-size:14px;
+    }
+    .form-group input {
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      font-size:14px;
+    }
+    .form-group input:focus {
+      outline:none;
+      border-color:var(--accent);
+    }
+    
+    /* Message styling */
+    #message {
+      font-size: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none; /* Hidden by default */
+    }
+    #message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      display: block;
+    }
+    #message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <header class="navbar">
+    <div class="left-section">
+      <button class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-label="Open menu">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </button>
+      <div class="brand">
+        <div class="logo">
+          <img class="card-image" src="assets/icons/logo.png" alt="Fasco Logo">
+        </div>
+        <div>
+          <h1>Fasco</h1>
+          <div style="font-size:12px;color:var(--muted)">Inventory & Billing</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a href="home.html">Dashboard</a>
+      <a href="inventory.html">Inventory</a>
+      <a href="sales.html">Sales</a>
+      <a href="orders.html">Orders</a>
+      <a href="users.html">Users</a>
+      <a href="customers.html">Customers</a>
+      <a href="suppliers.html">Suppliers</a>
+      <a href="reports.html">Reports</a>
+      <a id="settings" href="settings.html">Settings</a> <!-- Active Link -->
+    </nav>
+
+    <!-- NAVBAR CLEANUP -->
+    <div class="actions">
+      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
+      <button class="btn danger" id="logoutBtn">Log Out</button>
+    </div>
+  </header>
+
+  <div id="main-body">
+    <div id="mobileMenu" class="mobile-menu">
+      <a href="home.html">Dashboard</a>
+      <a href="inventory.html">Products</a>
+      <a href="sales.html">Sales</a>
+      <a href="orders.html">Orders</a>
+      <a href="users.html">Users</a>
+      <a href="customers.html">Customers</a>
+      <a href="suppliers.html">Suppliers</a>
+      <a href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a> <!-- New Link -->
+    </div>
+
+    <div class="container">
+      <div class="page-header">
+        <h2>Account Settings</h2>
+      </div>
+
+      <!-- Change Password Card -->
+      <div class="settings-card">
+        <form id="passwordForm">
+          <div class="settings-header">
+            <h3>Change Password</h3>
+          </div>
+          <div class="settings-body">
+            <div id="message"></div> <!-- For success/error messages -->
+            
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <input type="password" id="currentPassword" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" minlength="6" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" minlength="6" required>
+            </div>
+          </div>
+          <div class="settings-footer">
+            <button type="submit" class="btn primary" id="saveBtn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api/users/change-password";
+    const token = localStorage.getItem('token');
+    
+    // Get elements
+    const passwordForm = document.getElementById('passwordForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const messageDiv = document.getElementById('message');
+
+    // --- Form Submit Handler ---
+    passwordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // Reset message
+      messageDiv.style.display = 'none';
+
+      // Basic validation
+      if (newPassword.length < 6) {
+        showMessage('New password must be at least 6 characters long.', 'error');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showMessage('New passwords do not match.', 'error');
+        return;
+      }
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token // Send our login token
+          },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'An unknown error occurred.');
+        }
+        
+        // Success
+        showMessage('Password updated successfully!', 'success');
+        passwordForm.reset();
+
+      } catch (err) {
+        showMessage(err.message, 'error');
+      } finally {
+        saveBtn.textContent = 'Save Changes';
+        saveBtn.disabled = false;
+      }
+    });
+    
+    function showMessage(msg, type) {
+      messageDiv.textContent = msg;
+      messageDiv.className = type; // 'success' or 'error'
+    }
+
+    // --- Mobile Menu & Logout ---
+    const btn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mainBody = document.getElementById('main-body');
+
+    function toggleMenu(){
+      const open = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mobileMenu.classList.toggle('open', open);
+      mainBody.classList.toggle('pushed', open);
+    }
+    btn.addEventListener('click', toggleMenu);
+    
+    window.addEventListener('resize', ()=>{
+      if(window.innerWidth > 720){
+        mobileMenu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        mainBody.classList.remove('pushed');
+      }
+    });
+    
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
+
+    // --- Auth Check ---
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!token) {
+        // Redirect to login if no token
+        window.location.href = 'login.html';
+      }
+    });
+
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco – Inventory</title>
+  <title>Fasco — Inventory</title>
   <style>
     :root{
       --bg:#f6f8fb;
@@ -55,29 +55,8 @@
     .btn.danger{background:var(--danger);color:white;border:none}
     .btn.small{padding:6px 10px;font-size:12px}
 
-    .hamburger {
-      border: 0;
-      background: none;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      display: inline-flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 6px; 
-    }
-
-    .hamburger .line {
-      width: 22px;
-      height: 2px;
-      background: #111827;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      backface-visibility: hidden;
-    }
-
-    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
-    .hamburger.open .line:nth-child(2){opacity:0}
-    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+    .hamburger{border:0;background:none;cursor:pointer;padding:8px;border-radius:8px;display:inline-flex;flex-direction:column;justify-content:center; gap: 6px;}
+    .hamburger .line{width:22px;height:2px;background:#111827;transition:transform .2s ease,opacity .2s ease}
 
     .mobile-menu{
       display: flex; 
@@ -100,31 +79,24 @@
       transform: translateX(0);
     }
     
-    #menu-overlay {
-      display: none;
-    }
-
     .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
 
-    .container{
-      display: flex;
-      flex-direction: column;
-      padding:20px;
-      height:100%;
-      overflow:hidden;
-      width: 100%;
-    }
+    .container{max-width:1200px;margin:0 auto;padding:20px;height:100%;overflow-y:auto}
+
+    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
+    .hamburger.open .line:nth-child(2){opacity:0}
+    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
 
     .card-image {
-        max-width: 100%; 
-        height: auto;
-        display: block;
-        border-radius: 6px; 
+      max-width: 100%; 
+      height: auto;
+      display: block;
+      border-radius: 6px; 
     }
 
     #inventory {
-        font-size: large;
-        color: rgb(153, 30, 30);
+      font-size: large;
+      color: rgb(153, 30, 30);
     }
 
     #main-body {
@@ -132,10 +104,7 @@
       position: relative;
       overflow: hidden;
       transition: margin-left 0.3s ease-in-out;
-      display: flex;
-      flex-direction: column;
     }
-
     #main-body.pushed {
       margin-left: 280px;
     }
@@ -146,9 +115,7 @@
       justify-content:space-between;
       align-items:center;
       margin-bottom:24px;
-      flex-shrink: 0;
     }
-    
     .inventory-header h2{
       margin:0;
       font-size:24px;
@@ -164,15 +131,12 @@
       gap:12px;
       flex-wrap:wrap;
       align-items:center;
-      flex-shrink: 0;
     }
-
     .search-box{
       flex:1;
       min-width:250px;
       position:relative;
     }
-
     .search-box input{
       width:100%;
       padding:10px 40px 10px 12px;
@@ -180,12 +144,10 @@
       border-radius:8px;
       font-size:14px;
     }
-
     .search-box input:focus{
       outline:none;
       border-color:var(--accent);
     }
-
     .search-icon{
       position:absolute;
       right:12px;
@@ -193,13 +155,11 @@
       transform:translateY(-50%);
       color:var(--muted);
     }
-
     .filter-group{
       display:flex;
       gap:8px;
       align-items:center;
     }
-
     select{
       padding:10px 12px;
       border:1px solid #e5e7eb;
@@ -214,29 +174,24 @@
       grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
       gap:16px;
       margin-bottom:24px;
-      flex-shrink: 0;
     }
-
     .stat-card{
       background:var(--card);
       padding:20px;
       border-radius:12px;
       box-shadow:var(--shadow);
     }
-
     .stat-card h4{
       margin:0 0 8px 0;
       font-size:14px;
       color:var(--muted);
       font-weight:500;
     }
-
     .stat-value{
       font-size:28px;
       font-weight:700;
       margin:0;
     }
-
     .stat-card.low-stock .stat-value{color:var(--danger)}
     .stat-card.total .stat-value{color:var(--accent)}
     .stat-card.categories .stat-value{color:var(--success)}
@@ -246,50 +201,15 @@
       border-radius:12px;
       box-shadow:var(--shadow);
       overflow:hidden;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
     }
-
-    .table-wrapper{
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: auto;
-    }
-
-    .table-wrapper::-webkit-scrollbar{
-      width:10px;
-      height:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-track{
-      background:#f1f1f1;
-      border-radius:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb{
-      background:#9ca3af;
-      border-radius:10px;
-    }
-
-    .table-wrapper::-webkit-scrollbar-thumb:hover{
-      background:#6b7280;
-    }
-
     .inventory-table{
       width:100%;
       border-collapse:collapse;
     }
-
     .inventory-table thead{
       background:#f9fafb;
       border-bottom:2px solid #e5e7eb;
-      position:sticky;
-      top:0;
-      z-index:10;
     }
-
     .inventory-table th{
       text-align:left;
       padding:14px 16px;
@@ -299,15 +219,16 @@
       text-transform:uppercase;
       letter-spacing:0.5px;
     }
-
     .inventory-table td{
       padding:14px 16px;
       border-bottom:1px solid #f3f4f6;
       font-size:14px;
     }
-
     .inventory-table tbody tr:hover{
       background:#f9fafb;
+    }
+    .inventory-table th.right, .inventory-table td.right {
+      text-align: right;
     }
 
     .status-badge{
@@ -317,17 +238,14 @@
       font-size:12px;
       font-weight:600;
     }
-
     .status-badge.in-stock{
       background:#d1fae5;
       color:#065f46;
     }
-
     .status-badge.low-stock{
       background:#fed7aa;
       color:#92400e;
     }
-
     .status-badge.out-stock{
       background:#fee2e2;
       color:#991b1b;
@@ -337,7 +255,6 @@
       display:flex;
       gap:6px;
     }
-
     .icon-btn{
       padding:6px 8px;
       border:1px solid #e5e7eb;
@@ -347,16 +264,13 @@
       font-size:12px;
       transition:all .2s;
     }
-
     .icon-btn:hover{
       background:#f3f4f6;
     }
-
     .icon-btn.edit:hover{
       border-color:var(--accent);
       color:var(--accent);
     }
-
     .icon-btn.delete:hover{
       border-color:var(--danger);
       color:var(--danger);
@@ -374,32 +288,30 @@
       align-items:center;
       justify-content:center;
     }
-
     .modal.show{
       display:flex;
     }
-
     .modal-content{
       background:white;
       border-radius:12px;
-      padding:28px;
+      padding: 0; /* Remove padding */
       max-width:500px;
       width:90%;
       max-height:90vh;
-      overflow-y:auto;
+      display: flex; /* Use flex */
+      flex-direction: column; /* Column layout */
     }
-
     .modal-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:20px;
+      padding: 20px 28px; /* Add padding */
+      border-bottom: 1px solid #e5e7eb;
     }
-
     .modal-header h3{
       margin:0;
+      font-size: 18px;
     }
-
     .close-btn{
       background:none;
       border:none;
@@ -407,18 +319,28 @@
       cursor:pointer;
       color:var(--muted);
     }
+    .modal-body {
+      padding: 28px; /* Add padding */
+      overflow-y: auto; /* Allow body to scroll */
+    }
+    .modal-actions {
+      padding: 20px 28px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #f9fafb;
+    }
 
     .form-group{
       margin-bottom:16px;
     }
-
     .form-group label{
       display:block;
       margin-bottom:6px;
       font-weight:500;
       font-size:14px;
     }
-
     .form-group input,
     .form-group select,
     .form-group textarea{
@@ -428,19 +350,11 @@
       border-radius:8px;
       font-size:14px;
     }
-
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus{
       outline:none;
       border-color:var(--accent);
-    }
-
-    .form-actions{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      margin-top:24px;
     }
 
     @media (max-width:720px){
@@ -449,10 +363,10 @@
       .inventory-header{flex-direction:column;align-items:flex-start;gap:12px}
       .search-filter-bar{flex-direction:column}
       .search-box{min-width:100%}
+      .inventory-table-container{overflow-x:auto}
       .inventory-table{min-width:800px}
       .stats-grid{grid-template-columns:1fr}
     }
-
   </style>
 </head>
 <body>
@@ -482,17 +396,19 @@
       <a href="orders.html">Orders</a>
       <a href="users.html">Users</a>
       <a href="customers.html">Customers</a>
+      <a href="suppliers.html">Suppliers</a>
+      <a href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a>
     </nav>
 
+    <!-- NAVBAR CLEANUP -->
     <div class="actions">
-      <button class="btn">Profile</button>
-      <button class="btn primary">New Invoice</button>
+      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
       <button class="btn danger" id="logoutBtn">Log Out</button>
     </div>
   </header>
 
   <div id="main-body">
-    <div id="menu-overlay"></div>
     <div id="mobileMenu" class="mobile-menu">
       <a href="home.html">Dashboard</a>
       <a href="inventory.html">Products</a>
@@ -500,8 +416,9 @@
       <a href="orders.html">Orders</a>
       <a href="users.html">Users</a>
       <a href="customers.html">Customers</a>
-      <a href="#">Reports</a>
-      <a href="#">Settings</a>
+      <a href="suppliers.html">Suppliers</a>
+      <a href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a>
     </div>
 
     <div class="container">
@@ -529,7 +446,8 @@
         </div>
         <div class="stat-card">
           <h4>Total Value</h4>
-          <p class="stat-value" id="totalValue">₹0</p>
+          <!-- KUWAITI CHANGE -->
+          <p class="stat-value" id="totalValue">KD 0.000</p>
         </div>
       </div>
 
@@ -542,11 +460,7 @@
         <div class="filter-group">
           <select id="categoryFilter" onchange="filterTable()">
             <option value="">All Categories</option>
-            <option value="Fire Extinguisher">Fire Extinguishers</option>
-            <option value="Fire Alarm">Fire Alarms</option>
-            <option value="Safety Equipment">Safety Equipment</option>
-            <option value="Sprinkler System">Sprinkler Systems</option>
-            <option value="Emergency Light">Emergency Lights</option>
+            <!-- Categories will be populated by JS -->
           </select>
           <select id="stockFilter" onchange="filterTable()">
             <option value="">All Stock Status</option>
@@ -559,25 +473,24 @@
 
       <!-- Inventory Table -->
       <div class="inventory-table-container">
-        <div class="table-wrapper">
-          <table class="inventory-table" id="inventoryTable">
-            <thead>
-              <tr>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Unit</th>
-                <th>Price (₹)</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="inventoryBody">
-              <!-- Table rows will be populated by JavaScript -->
-            </tbody>
-          </table>
-        </div>
+        <table class="inventory-table" id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Product Code</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th class="right">Stock</th>
+              <th>Unit</th>
+              <!-- KUWAITI CHANGE -->
+              <th class="right">Price (KD)</th> 
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <!-- Table rows will be populated by JavaScript -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -585,56 +498,57 @@
   <!-- Add/Edit Product Modal -->
   <div class="modal" id="productModal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle">Add New Product</h3>
-        <button class="close-btn" onclick="closeModal()">&times;</button>
-      </div>
       <form id="productForm" onsubmit="saveProduct(event)">
-        <div class="form-group">
-          <label>Product Code*</label>
-          <input type="text" id="productCode" required>
+        <div class="modal-header">
+          <h3 id="modalTitle">Add New Product</h3>
+          <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
         </div>
-        <div class="form-group">
-          <label>Product Name*</label>
-          <input type="text" id="productName" required>
+        <div class="modal-body">
+          <input type="hidden" id="productId">
+          <div class="form-group">
+            <label>Product Code*</label>
+            <input type="text" id="productCode" required>
+          </div>
+          <div class="form-group">
+            <label>Product Name*</label>
+            <input type="text" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label>Category*</label>
+            <select id="productCategory" required>
+              <option value="">Select Category</option>
+              <!-- Categories will be populated by JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Stock Quantity*</label>
+            <input type="number" id="productStock" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Unit*</label>
+            <select id="productUnit" required>
+              <option value="pcs">Pieces</option>
+              <option value="box">Box</option>
+              <option value="set">Set</option>
+              <option value="unit">Unit</option>
+              <option value="meter">Meter</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <!-- KUWAITI CHANGE -->
+            <label>Price (KD)*</label>
+            <input type="number" id="productPrice" min="0" step="0.001" required>
+          </div>
+          <div class="form-group">
+            <label>Minimum Stock Alert</label>
+            <input type="number" id="minStock" min="0" value="10">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="productDesc" rows="3" placeholder="Optional product description..."></textarea>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Category*</label>
-          <select id="productCategory" required>
-            <option value="">Select Category</option>
-            <option value="Fire Extinguisher">Fire Extinguisher</option>
-            <option value="Fire Alarm">Fire Alarm</option>
-            <option value="Safety Equipment">Safety Equipment</option>
-            <option value="Sprinkler System">Sprinkler System</option>
-            <option value="Emergency Light">Emergency Light</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Stock Quantity*</label>
-          <input type="number" id="productStock" min="0" required>
-        </div>
-        <div class="form-group">
-          <label>Unit*</label>
-          <select id="productUnit" required>
-            <option value="pcs">Pieces</option>
-            <option value="box">Box</option>
-            <option value="set">Set</option>
-            <option value="unit">Unit</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Price (₹)*</label>
-          <input type="number" id="productPrice" min="0" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label>Minimum Stock Alert</label>
-          <input type="number" id="minStock" min="0" value="10">
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea id="productDesc" rows="3" placeholder="Optional product description..."></textarea>
-        </div>
-        <div class="form-actions">
+        <div class="modal-actions">
           <button type="button" class="btn" onclick="closeModal()">Cancel</button>
           <button type="submit" class="btn primary">Save Product</button>
         </div>
@@ -648,17 +562,36 @@
     const productForm = document.getElementById("productForm");
     const modalTitle = document.getElementById("modalTitle");
     const tbody = document.getElementById('inventoryBody');
+    const token = localStorage.getItem('token'); // Get token
 
-    let inventory = [];
-    let editingId = null;
+    let inventory = []; // This will be filled from the API
+    let categories = new Set(); // To dynamically populate filters
 
     // --- API Functions ---
     
+    // 1. FETCH all products from DB
     async function fetchProducts() {
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, {
+          headers: { 'x-auth-token': token } // Send token
+        });
+        
+        if (res.status === 401 || res.status === 403) {
+          window.location.href = 'login.html';
+          return;
+        }
+        
         inventory = await res.json();
-        inventory = inventory.map(p => ({...p, minStock: p.min_stock}));
+        
+        // Map db `min_stock` to frontend `minStock`
+        inventory = inventory.map(p => ({...p, minStock: p.min_stock, description: p.description || ''}));
+        
+        populateCategories();
         renderTable();
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -666,68 +599,123 @@
       }
     }
 
+    // 2. ADD a new product to DB
     async function addProductAPI(product) {
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-auth-token": token },
           body: JSON.stringify(product),
         });
+        if (!res.ok) throw new Error('Failed to add product');
         const newProduct = await res.json();
-        inventory.push({...newProduct, minStock: newProduct.min_stock});
+        
+        inventory.push({...newProduct, minStock: newProduct.min_stock, description: newProduct.description || ''});
+        populateCategories(); // Update categories if new one was added
         renderTable();
+        
       } catch (err) {
         console.error("Error adding product:", err);
+        alert("Error adding product: " + err.message);
       }
     }
 
+    // 3. UPDATE a product in DB
     async function updateProductAPI(id, product) {
       try {
         const res = await fetch(`${API_URL}/${id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-auth-token": token },
           body: JSON.stringify(product),
         });
+        if (!res.ok) throw new Error('Failed to update product');
         const updatedProduct = await res.json();
+        
         const index = inventory.findIndex(p => p.id === id);
         if (index !== -1) {
-          inventory[index] = {...updatedProduct, minStock: updatedProduct.min_stock};
+          inventory[index] = {...updatedProduct, minStock: updatedProduct.min_stock, description: updatedProduct.description || ''};
         }
+        populateCategories(); // Update categories if one was changed
         renderTable();
+        
       } catch (err) {
         console.error("Error updating product:", err);
+        alert("Error updating product: " + err.message);
       }
     }
 
+    // 4. DELETE a product from DB
     async function deleteProductAPI(id) {
       try {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        await fetch(`${API_URL}/${id}`, { 
+          method: "DELETE",
+          headers: { 'x-auth-token': token } 
+        });
+        
         inventory = inventory.filter(p => p.id !== id);
+        populateCategories();
         renderTable();
+
       } catch (err) {
         console.error("Error deleting product:", err);
+        alert("Error deleting product: " + err.message);
       }
+    }
+
+    // --- UI/Helper Functions ---
+    
+    function populateCategories() {
+      categories = new Set(inventory.map(p => p.category).filter(Boolean)); // Get all unique, non-empty categories
+      const categoryFilter = document.getElementById('categoryFilter');
+      const productCategory = document.getElementById('productCategory');
+      
+      // Save current values
+      const currentFilter = categoryFilter.value;
+      const currentModalCategory = productCategory.value;
+      
+      categoryFilter.innerHTML = '<option value="">All Categories</option>';
+      productCategory.innerHTML = '<option value="">Select Category</option>';
+      
+      categories.forEach(cat => {
+        categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
+        productCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+      
+      // Restore values
+      categoryFilter.value = currentFilter;
+      productCategory.value = currentModalCategory;
     }
 
     function renderTable() {
       tbody.innerHTML = '';
       
-      inventory.forEach(item => {
+      const filteredInventory = filterInventory();
+      
+      if (filteredInventory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;">No products match your filters.</td></tr>`;
+        updateStats(); // Update stats even if table is empty
+        return;
+      }
+      
+      filteredInventory.forEach(item => {
         const status = item.stock === 0 ? 'out-stock' : item.stock <= item.minStock ? 'low-stock' : 'in-stock';
         const statusText = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
+        
+        // KUWAITI CHANGE
+        const price = parseFloat(item.price || 0).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         
         const row = `
           <tr>
             <td><strong>${item.code}</strong></td>
             <td>${item.name}</td>
             <td>${item.category}</td>
-            <td>${item.stock}</td>
+            <td class="right">${item.stock}</td>
             <td>${item.unit}</td>
-            <td>₹${item.price.toLocaleString()}</td>
+            <td class="right">KD ${price}</td>
             <td><span class="status-badge ${status}">${statusText}</span></td>
             <td>
               <div class="action-btns">
-                <button class="icon-btn edit" onclick="editProduct(${item.id})" title="Edit">✏️</button>
+                <button class="icon-btn edit" onclick="openEditModal(${item.id})" title="Edit">✏️</button>
                 <button class="icon-btn delete" onclick="deleteProduct(${item.id})" title="Delete">🗑️</button>
               </div>
             </td>
@@ -741,44 +729,52 @@
 
     function updateStats() {
       document.getElementById('totalProducts').textContent = inventory.length;
+      
       const lowStock = inventory.filter(item => item.stock <= item.minStock && item.stock > 0).length;
       document.getElementById('lowStockCount').textContent = lowStock;
-      const categories = [...new Set(inventory.map(item => item.category))].length;
-      document.getElementById('categoryCount').textContent = categories;
+      
+      document.getElementById('categoryCount').textContent = categories.size;
+      
       const totalValue = inventory.reduce((sum, item) => sum + (item.stock * item.price), 0);
-      document.getElementById('totalValue').textContent = '₹' + totalValue.toLocaleString();
+      
+      // KUWAITI CHANGE
+      document.getElementById('totalValue').textContent = 'KD ' + totalValue.toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
     }
 
     function filterTable() {
+      renderTable(); // This will re-render the table, which calls filterInventory()
+    }
+    
+    function filterInventory() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
       const categoryFilter = document.getElementById('categoryFilter').value;
       const stockFilter = document.getElementById('stockFilter').value;
-      const rows = document.querySelectorAll('#inventoryBody tr');
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        const category = row.children[2].textContent;
-        const statusBadge = row.querySelector('.status-badge');
-        const stockStatus = statusBadge.classList.contains('in-stock') ? 'in-stock' :
-                            statusBadge.classList.contains('low-stock') ? 'low-stock' : 'out-stock';
-        const matchesSearch = text.includes(searchTerm);
-        const matchesCategory = !categoryFilter || category === categoryFilter;
-        const matchesStock = !stockFilter || stockStatus === stockFilter;
-        row.style.display = (matchesSearch && matchesCategory && matchesStock) ? '' : 'none';
+      
+      return inventory.filter(item => {
+        const status = item.stock === 0 ? 'out-stock' : item.stock <= item.minStock ? 'low-stock' : 'in-stock';
+        
+        const matchesSearch = (item.name.toLowerCase().includes(searchTerm) || 
+                             item.code.toLowerCase().includes(searchTerm) ||
+                             item.category.toLowerCase().includes(searchTerm));
+        const matchesCategory = !categoryFilter || item.category === categoryFilter;
+        const matchesStock = !stockFilter || status === stockFilter;
+        
+        return matchesSearch && matchesCategory && matchesStock;
       });
     }
 
     function openAddModal() {
-      editingId = null;
-      modalTitle.textContent = 'Add New Product';
       productForm.reset();
+      document.getElementById('productId').value = '';
+      modalTitle.textContent = 'Add New Product';
       productModal.classList.add('show');
     }
 
-    function editProduct(id) {
-      editingId = id;
+    function openEditModal(id) {
       const product = inventory.find(p => p.id === id);
+      if (!product) return;
       
-      modalTitle.textContent = 'Edit Product';
+      document.getElementById('productId').value = product.id;
       document.getElementById('productCode').value = product.code;
       document.getElementById('productName').value = product.name;
       document.getElementById('productCategory').value = product.category;
@@ -786,19 +782,20 @@
       document.getElementById('productUnit').value = product.unit;
       document.getElementById('productPrice').value = product.price;
       document.getElementById('minStock').value = product.minStock;
-      document.getElementById('productDesc').value = product.description || '';
+      document.getElementById('productDesc').value = product.description;
       
+      modalTitle.textContent = 'Edit Product';
       productModal.classList.add('show');
     }
 
     function closeModal() {
       productModal.classList.remove('show');
-      editingId = null;
     }
 
     function saveProduct(e) {
       e.preventDefault();
       
+      const id = document.getElementById('productId').value;
       const product = {
         code: document.getElementById('productCode').value,
         name: document.getElementById('productName').value,
@@ -810,8 +807,8 @@
         description: document.getElementById('productDesc').value
       };
       
-      if (editingId) {
-        updateProductAPI(editingId, product);
+      if (id) {
+        updateProductAPI(Number(id), product);
       } else {
         addProductAPI(product);
       }
@@ -826,11 +823,12 @@
     }
 
     function exportInventory() {
-      let csv = 'Product Code,Product Name,Category,Stock,Unit,Price,Status\n';
-      inventory.forEach(item => {
+      let csv = 'Product Code,Product Name,Category,Stock,Unit,Price (KD),Status\n';
+      filterInventory().forEach(item => { // Export only filtered items
         const status = item.stock === 0 ? 'Out of Stock' : item.stock <= item.minStock ? 'Low Stock' : 'In Stock';
         csv += `${item.code},"${item.name}",${item.category},${item.stock},${item.unit},${item.price},${status}\n`;
       });
+      
       const blob = new Blob([csv], {type: 'text/csv'});
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -839,7 +837,7 @@
       a.click();
     }
 
-    // --- Mobile Menu ---
+    // --- Mobile menu & Logout ---
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -851,6 +849,12 @@
       mainBody.classList.toggle('pushed', open);
     }
     btn.addEventListener('click', toggleMenu);
+    
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
+
     window.addEventListener('resize', ()=>{
       if(window.innerWidth > 720){
         mobileMenu.classList.remove('open');
@@ -860,13 +864,8 @@
       }
     });
 
+    // --- Initialize table on load ---
     document.addEventListener('DOMContentLoaded', fetchProducts);
-
-    // --- Log Out Button ---
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('token'); // Clear the token
-      window.location.href = 'login.html'; // Go back to login page
-    });
   </script>
 </body>
 </html>

@@ -4,286 +4,222 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fasco — Customers</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     :root {
+      /* Fasco Brand Colors */
+      --primary-color: #4A00E0;
+      --secondary-color: #ff5e62;
+      --brand-gradient: linear-gradient(90deg, #ff9966, #ff5e62);
+      
+      /* Functional Colors */
       --bg: #f6f8fb;
-      --card: #ffffff;
-      --accent: #1f6feb;
-      --muted: #6b7280;
-      --shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
-      --danger: #dc2626;
-      --warning: #f59e0b;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      
+      /* Status Colors */
       --success: #10b981;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
     }
-    * { box-sizing: border-box }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background: var(--bg);
-      color: #111827;
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-body);
       display: flex;
       flex-direction: column;
       height: 100vh;
-      overflow: hidden;
+      overflow-y: auto; /* ENABLE SCROLLING */
     }
 
+    /* --- NAVBAR --- */
     .navbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 20px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
-      backdrop-filter: blur(6px);
-      box-shadow: var(--shadow);
+      padding: 15px 30px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
       position: sticky;
       top: 0;
       z-index: 40;
       flex-shrink: 0;
     }
-    .left-section { display: flex; align-items: center; gap: 12px }
-    .brand { display: flex; align-items: center; gap: 10px }
-    .logo { width: 36px; height: 36px; border-radius: 8px; background: var(--accent); display: inline-grid; place-items: center; color: white; font-weight: 700 }
-    .brand h1 { font-size: 16px; margin: 0 }
-    .nav-links { display: flex; gap: 18px; align-items: center }
-    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 600 }
-    .nav-links a:hover { color: var(--accent) }
-    .actions { display: flex; gap: 12px; align-items: center }
-    .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(15, 23, 42, 0.06); background: var(--card); cursor: pointer; font-size: 14px; font-weight: 500; transition: all .2s }
-    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow) }
-    .btn.primary { background: var(--accent); color: white; border: none }
-    .btn.danger { background: var(--danger); color: white; border: none }
-    .btn.small { padding: 6px 10px; font-size: 12px }
 
+    .left-section { display: flex; align-items: center; gap: 15px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    
+    .logo-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--brand-gradient); color: white;
+      display: grid; place-items: center; font-size: 18px;
+      box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading); font-size: 22px; margin: 0;
+      background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: 0.5px;
+    }
+    
+    .brand-text div { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+    .nav-links { display: flex; gap: 30px; align-items: center; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none; font-weight: 500;
+      font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--secondary-color); }
+
+    .actions { display: flex; gap: 15px; align-items: center; }
+
+    /* --- HAMBURGER MENU --- */
     .hamburger {
-      border: 0;
-      background: none;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      display: inline-flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 6px;
+      border: 0; background: none; cursor: pointer; padding: 8px; border-radius: 8px;
+      display: flex; flex-direction: column; justify-content: center; gap: 6px;
     }
     .hamburger .line {
-      width: 22px;
-      height: 2px;
-      background: #111827;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      backface-visibility: hidden;
+      width: 24px; height: 2px; background: var(--text-main);
+      transition: transform 0.2s ease, opacity 0.2s ease; border-radius: 2px;
     }
-    .hamburger.open .line:nth-child(1) { transform: translateY(5px) rotate(45deg) }
-    .hamburger.open .line:nth-child(2) { opacity: 0 }
-    .hamburger.open .line:nth-child(3) { transform: translateY(-5px) rotate(-45deg) }
+    .hamburger.open .line:nth-child(1){ transform: translateY(8px) rotate(45deg); }
+    .hamburger.open .line:nth-child(2){ opacity: 0; }
+    .hamburger.open .line:nth-child(3){ transform: translateY(-8px) rotate(-45deg); }
 
-    .mobile-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 28px 20px;
-      position: fixed;
-      top: 60px;
-      left: 0;
-      height: calc(100% - 60px);
-      width: 280px;
-      background: var(--card);
-      z-index: 50;
-      box-shadow: var(--shadow);
-      transform: translateX(-280px);
-      transition: transform 0.3s ease-in-out;
+    /* --- BUTTONS --- */
+    .btn {
+      padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border);
+      background: white; cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: all 0.2s; font-family: var(--font-heading); display: flex; align-items: center; gap: 8px;
     }
-    .mobile-menu.open {
-      transform: translateX(0);
-    }
-    .mobile-menu a { padding: 8px 0; color: var(--muted); text-decoration: none }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; height: 100%; overflow-y: auto }
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
     
-    .card-image {
-      max-width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 6px;
+    .btn.primary {
+      background: var(--brand-gradient); color: white; border: none;
+      box-shadow: 0 4px 15px rgba(255, 94, 98, 0.25);
     }
-    
-    #customers { /* Active link style */
-      font-size: large;
-      color: rgb(153, 30, 30);
+    .btn.danger { background: #fee2e2; color: #ef4444; border: none; }
+    .btn.small { 
+        padding: 8px 16px; font-size: 12px; border-radius: 20px; 
+        width: 100px; justify-content: center; 
     }
 
+    /* --- LAYOUT & PUSH ANIMATION --- */
     #main-body {
-      flex-grow: 1;
-      position: relative;
-      overflow: hidden;
+      flex-grow: 1; position: relative; overflow: hidden; display: flex;
       transition: margin-left 0.3s ease-in-out;
     }
-    #main-body.pushed {
-      margin-left: 280px;
+    #main-body.pushed { margin-left: 280px; }
+
+    .mobile-menu {
+      position: fixed; top: 73px; left: 0; height: calc(100% - 73px); width: 280px;
+      background: white; z-index: 50; box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+      padding: 20px; display: flex; flex-direction: column; gap: 10px;
+      transform: translateX(-280px); transition: transform 0.3s ease-in-out;
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu a { 
+        padding: 12px 15px; text-decoration: none; color: var(--text-main); 
+        border-radius: 8px; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .mobile-menu a:hover { background: #fff1f2; color: var(--secondary-color); }
+
+    /* --- CONTAINER (Scrollable) --- */
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 30px; width: 100%; height: 100%; overflow-y: auto;
     }
 
-    /* Page Styles */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
+    .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .page-header h2 { font-family: var(--font-heading); font-size: 26px; font-weight: 700; margin: 0; color: #111827; }
+
+    /* --- SEARCH BAR --- */
+    .search-filter-bar {
+      background: var(--card-bg); padding: 15px; border-radius: 12px;
+      box-shadow: var(--shadow); margin-bottom: 25px; display: flex; gap: 15px; align-items: center;
+      border: 1px solid var(--border);
     }
-    .page-header h2 {
-      margin: 0;
-      font-size: 24px;
+    .search-box { flex: 1; position: relative; }
+    .search-box input {
+      width: 100%; padding: 12px 20px; border: 1px solid var(--border);
+      border-radius: 30px; font-size: 14px; outline: none; transition: 0.2s; background: #f9fafb; padding-left: 45px;
     }
-    
-    .search-filter-bar{
-      background:var(--card);
-      padding:16px;
-      border-radius:12px;
-      box-shadow:var(--shadow);
-      margin-bottom:20px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .search-box{
-      flex:1;
-      position:relative;
-    }
-    .search-box input{
-      width:100%;
-      padding:10px 12px;
-      border:1px solid #e5e7eb;
-      border-radius:8px;
-      font-size:14px;
-    }
-    
+    .search-box input:focus { border-color: var(--secondary-color); background: #fff; box-shadow: 0 0 0 3px rgba(255, 94, 98, 0.1); }
+
+    /* --- TABLE --- */
     .customer-table-container {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow);
+      overflow: hidden; border: 1px solid var(--border);
     }
-    .customer-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .customer-table thead {
-      background: #f9fafb;
-      border-bottom: 2px solid #e5e7eb;
-    }
+    .customer-table { width: 100%; border-collapse: collapse; }
+    .customer-table thead { background: #f9fafb; border-bottom: 2px solid #e5e7eb; }
+    
     .customer-table th {
-      text-align: left;
-      padding: 14px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      padding: 18px 24px; font-size: 12px; font-weight: 700;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
     }
     .customer-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 14px;
+      padding: 18px 24px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: var(--text-main);
     }
-    .customer-table tbody tr:hover {
-      background: #f9fafb;
-    }
-    .customer-table th.right, .customer-table td.right {
-      text-align: right;
-    }
-
-    /* Status Badge Styles */
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .status-badge.Paid {
-      background: #d1fae5;
-      color: #065f46;
-    }
-    .status-badge.Pending {
-      background: #fed7aa;
-      color: #92400e;
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal.show {
-      display: flex;
-    }
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 0;
-      max-width: 600px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 28px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .modal-header h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: var(--muted);
-    }
-    .modal-body {
-      padding: 28px;
-    }
-    .modal-actions {
-      padding: 20px 28px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: flex-end;
-      background: #f9fafb;
-    }
+    .customer-table tbody tr:hover { background: #fff1f2; }
     
-    .history-table {
-      width:100%;
-      border-collapse: collapse;
+    /* --- ALIGNMENT CLASSES (THE FIX) --- */
+    .text-left { text-align: left !important; }
+    .text-center { text-align: center !important; }
+    .text-right { text-align: right !important; }
+
+    /* --- MODAL --- */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); z-index: 200; align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
     }
-    .history-table th {
-      background: #f9fafb;
-      padding: 10px;
-      text-align: left;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      border-bottom: 2px solid #e5e7eb;
+    .modal.show { display: flex; }
+    .modal-content {
+      background: white; border-radius: 16px; padding: 0; max-width: 700px; width: 90%;
+      max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: slideUp 0.3s ease;
     }
-    .history-table td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 14px;
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;
+      border-bottom: 1px solid var(--border); background: #fcfcfc;
     }
-    .history-table th.right, .history-table td.right {
-      text-align: right;
+    .modal-header h3 { margin: 0; font-size: 18px; font-family: var(--font-heading); font-weight: 600; }
+    .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+    .close-btn:hover { color: var(--danger); }
+    
+    .modal-body { padding: 30px; }
+    .modal-actions { padding: 20px 30px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: #f9fafb; }
+
+    /* History Table inside Modal */
+    .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .history-table th { background: #f3f4f6; padding: 12px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; border-radius: 6px; }
+    .history-table td { padding: 14px 12px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+
+    .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .status-badge.Paid { background: #ecfdf5; color: #059669; }
+    .status-badge.Pending { background: #fff7ed; color: #d97706; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links, .actions { display: none; }
+      .customer-table-container { overflow-x: auto; }
+      .customer-table { min-width: 600px; }
     }
   </style>
 </head>
@@ -296,41 +232,47 @@
         <span class="line"></span>
         <span class="line"></span>
       </button>
+      
       <div class="brand">
-        <div class="logo">
-          <img class="card-image" src="assets/icons/logo.png" alt="Fasco Logo">
+        <div class="logo-icon">
+          <i class="fas fa-fire-extinguisher"></i>
         </div>
-        <div>
-          <h1>Fasco</h1>
-          <div style="font-size:12px;color:var(--muted)">Inventory & Billing</div>
+        <div class="brand-text">
+          <h1>FASCO</h1>
+          <div>Inventory System</div>
         </div>
       </div>
     </div>
 
-    <nav class="nav-links" aria-label="Primary">
-      <a id="dash" href="home.html">Dashboard</a>
-      <a id="inv" href="inventory.html">Inventory</a>
-      <a id="sales" href="sales.html">Checkout</a>
+    <nav class="nav-links">
+      <a href="home.html"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="inventory.html"><i class="fas fa-box"></i> Inventory</a>
+      <a href="sales.html"><i class="fas fa-cash-register"></i> Checkout</a>
+      <a href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
     </nav>
 
-    <!-- NAVBAR CLEANUP -->
     <div class="actions">
-      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
-      <button class="btn danger" id="logoutBtn">Log Out</button>
+      <button class="btn" onclick="window.location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
+      <button class="btn primary" onclick="window.location.href='sales.html'"><i class="fas fa-plus"></i> New Invoice</button>
+      <button class="btn danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
     </div>
   </header>
 
   <div id="main-body">
+    
     <div id="mobileMenu" class="mobile-menu">
-      <a href="home.html">Dashboard</a>
-      <a href="inventory.html">Inventory</a>
-      <a href="sales.html">Checkout</a>
-      <a href="orders.html">Orders</a>
-      <a href="users.html">Users</a>
-      <a href="customers.html">Customers</a>
-      <a href="suppliers.html">Suppliers</a>
-      <a href="reports.html">Reports</a>
-      <a href="settings.html">Settings</a>
+      <a href="home.html"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="inventory.html"><i class="fas fa-box"></i> Inventory</a>
+      <a href="sales.html"><i class="fas fa-cash-register"></i> Checkout</a>
+      <a href="orders.html"><i class="fas fa-receipt"></i> Orders</a>
+      <a href="users.html"><i class="fas fa-users"></i> Users</a>
+      <a href="customers.html" style="color: var(--secondary-color); background: #fff1f2;"><i class="fas fa-user-friends"></i> Customers</a>
+      <a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a>
+      <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+      <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 10px;">
+        <a href="#" id="mobileLogout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+      </div>
     </div>
 
     <div class="container">
@@ -338,35 +280,33 @@
         <h2>Customer Management</h2>
       </div>
 
-      <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
         <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Search by Customer Name or Phone..." onkeyup="filterTable()">
+            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+            <input type="text" id="searchInput" placeholder="Search by Customer Name or Phone..." onkeyup="filterTable()">
         </div>
       </div>
 
-      <!-- Customer Table -->
       <div class="customer-table-container">
         <table class="customer-table" id="customerTable">
           <thead>
             <tr>
-              <th>Customer Name</th>
-              <th>Phone</th>
-              <th>Last Payment</th>
-              <th class="right">Total Orders</th>
-              <th class="right">Total Spent</th>
-              <th>Actions</th>
+              <th class="text-left">Customer Name</th>
+              <th class="text-left">Phone</th>
+              <th class="text-left">Payment Method</th>
+              <th class="text-center">Total Orders</th>
+              <th class="text-right">Total Spent</th>
+              <th class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody id="customersBody">
-            <!-- Rows will be populated by JavaScript -->
+            <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)"><i class="fas fa-spinner fa-spin"></i> Loading customers...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- Customer Order History Modal -->
   <div class="modal" id="historyModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -374,8 +314,7 @@
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body" id="modalBody">
-        <!-- Details will be populated by JavaScript -->
-      </div>
+        </div>
       <div class="modal-actions">
         <button type="button" class="btn" onclick="closeModal()">Close</button>
       </div>
@@ -389,8 +328,8 @@
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
     
-    let allCustomers = []; // To store the full list
-    const token = localStorage.getItem('token'); // Get the token from login
+    let allCustomers = []; 
+    const token = localStorage.getItem('token');
 
     // --- Primary Data Function ---
     async function fetchCustomers() {
@@ -401,7 +340,7 @@
 
       try {
         const res = await fetch(API_URL, {
-          headers: { 'x-auth-token': token } // Send token
+          headers: { 'x-auth-token': token } 
         });
 
         if (res.status === 401 || res.status === 403) {
@@ -414,7 +353,7 @@
 
       } catch (err) {
         console.error("Error fetching customers:", err);
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Error loading data. Is the server running?</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">Error loading data. Is the server running?</td></tr>`;
       }
     }
 
@@ -422,31 +361,32 @@
     function renderTable() {
       tbody.innerHTML = '';
       if (allCustomers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">No customers found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">No customers found.</td></tr>`;
         return;
       }
       
-      const filteredCustomers = filterCustomers(); // Apply search
+      const filteredCustomers = filterCustomers();
 
       if (filteredCustomers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">No customers match your search.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">No customers match your search.</td></tr>`;
         return;
       }
 
       filteredCustomers.forEach(customer => {
         const totalSpent = parseFloat(customer.total_spent || 0);
-        // KUWAITI CHANGE
         const totalSpentFormatted = totalSpent.toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         
         const row = `
           <tr>
-            <td><strong>${customer.name}</strong></td>
-            <td>${customer.phone || 'N/A'}</td>
-            <td>${customer.payment_method || 'N/A'}</td>
-            <td class="right">${customer.total_orders || 0}</td>
-            <td class="right"><strong>KD ${totalSpentFormatted}</strong></td>
-            <td>
-              <button class="btn small primary" onclick="openHistoryModal(${customer.id}, '${customer.name}')">View History</button>
+            <td class="text-left"><strong>${customer.name}</strong></td>
+            <td class="text-left">${customer.phone || '<span style="color:#aaa">N/A</span>'}</td>
+            <td class="text-left">${customer.payment_method || '<span style="color:#aaa">N/A</span>'}</td>
+            <td class="text-center">${customer.total_orders || 0}</td>
+            <td class="text-right"><strong>KD ${totalSpentFormatted}</strong></td>
+            <td class="text-center">
+              <button class="btn small primary" onclick="openHistoryModal(${customer.id}, '${customer.name}')">
+                <i class="fas fa-history"></i> History
+              </button>
             </td>
           </tr>
         `;
@@ -456,7 +396,7 @@
 
     // --- Filtering ---
     function filterTable() {
-      renderTable(); // Re-render the table with current filter values
+      renderTable();
     }
 
     function filterCustomers() {
@@ -475,8 +415,8 @@
 
     // --- Modal Functions ---
     async function openHistoryModal(customerId, customerName) {
-      modalTitle.textContent = `Order History for ${customerName}`;
-      modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading history...</p>';
+      modalTitle.textContent = `Order History: ${customerName}`;
+      modalBody.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;"><i class="fas fa-spinner fa-spin"></i> Loading history...</p>';
       historyModal.classList.add('show');
 
       try {
@@ -502,17 +442,16 @@
     
     function populateModal(history) {
       if (history.length === 0) {
-        modalBody.innerHTML = '<p style="text-align:center;color:var(--muted)">This customer has no order history.</p>';
+        modalBody.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">This customer has no order history.</p>';
         return;
       }
 
       const itemsHtml = history.map(order => `
         <tr>
-          <td><strong>${order.invoice_number || `#${order.id}`}</strong></td>
-          <!-- KUWAITI CHANGE -->
-          <td>${new Date(order.order_date).toLocaleDateString('en-KW')}</td>
-          <td class="right"><strong>KD ${parseFloat(order.total_amount).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</strong></td>
-          <td><span class="status-badge ${order.payment_status || 'Pending'}">${order.payment_status || 'Pending'}</span></td>
+          <td class="text-left"><strong>${order.invoice_number || `#${order.id}`}</strong></td>
+          <td class="text-left">${new Date(order.order_date).toLocaleDateString('en-KW')}</td>
+          <td class="text-right"><strong>KD ${parseFloat(order.total_amount).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</strong></td>
+          <td class="text-center"><span class="status-badge ${order.payment_status || 'Pending'}">${order.payment_status || 'Pending'}</span></td>
         </tr>
       `).join('');
 
@@ -520,10 +459,10 @@
         <table class="history-table">
           <thead>
             <tr>
-              <th>Invoice #</th>
-              <th>Date</th>
-              <th class="right">Total</th>
-              <th>Status</th>
+              <th class="text-left">Invoice #</th>
+              <th class="text-left">Date</th>
+              <th class="text-right">Total</th>
+              <th class="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -540,14 +479,14 @@
 
     // --- Auth Error Handling ---
     function handleAuthError(isModal = false) {
-      const errorHtml = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">
+      const errorHtml = `<div style="text-align:center;color:red;padding:20px;">
         <strong>Access Denied.</strong> You must be an admin to view this page.
-        </td></tr>`;
+        </div>`;
       
       if (isModal) {
-        modalBody.innerHTML = errorHtml.replace('colspan="6"', '');
+        modalBody.innerHTML = errorHtml;
       } else {
-        tbody.innerHTML = errorHtml;
+        tbody.innerHTML = `<tr><td colspan="6">${errorHtml}</td></tr>`;
       }
     }
     
@@ -565,7 +504,7 @@
     btn.addEventListener('click', toggleMenu);
     
     window.addEventListener('resize', ()=>{
-      if(window.innerWidth > 720){
+      if(window.innerWidth > 768){
         mobileMenu.classList.remove('open');
         btn.classList.remove('open');
         btn.setAttribute('aria-expanded','false');
@@ -574,6 +513,10 @@
     });
     
     document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
+    if(document.getElementById('mobileLogout')) document.getElementById('mobileLogout').addEventListener('click', () => {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
     });

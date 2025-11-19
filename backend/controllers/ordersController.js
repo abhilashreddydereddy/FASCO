@@ -30,14 +30,20 @@ exports.getOrderDetails = async (req, res) => {
     // Get order and customer info
     const orderInfoQuery = `
       SELECT 
-        o.id, o.order_date, o.subtotal, o.tax, o.total_amount,
-        c.name AS customer_name, c.phone AS customer_phone,
-        i.invoice_number, i.payment_method, i.payment_status
+        o.id,
+        o.order_date,
+        o.total_amount,
+        c.name AS customer_name,
+        c.phone AS customer_phone,
+        i.invoice_number,
+        i.payment_method,
+        i.payment_status
       FROM orders o
       LEFT JOIN customers c ON o.customer_id = c.id
       LEFT JOIN invoices i ON o.id = i.order_id
       WHERE o.id = $1;
     `;
+
     const orderRes = await pool.query(orderInfoQuery, [id]);
     if (orderRes.rows.length === 0) {
       return res.status(404).json({ error: "Order not found" });

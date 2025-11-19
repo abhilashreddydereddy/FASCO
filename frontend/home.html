@@ -4,282 +4,302 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fasco — Dashboard</title>
-  <style>
-    :root{
-      --bg:#f6f8fb;
-      --card:#ffffff;
-      --accent:#1f6feb;
-      --muted:#6b7280;
-      --shadow: 0 6px 18px rgba(17,24,39,0.06);
-      --danger:#dc2626;
-      --warning:#f59e0b;
-      --success:#10b981;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    body{
-      margin:0;
-      background:var(--bg);
-      color:#111827;
+  <style>
+    :root {
+      /* Fasco Brand Colors */
+      --primary-color: #4A00E0;
+      --secondary-color: #ff5e62;
+      --brand-gradient: linear-gradient(90deg, #ff9966, #ff5e62);
+      
+      /* Functional Colors */
+      --bg: #f6f8fb;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      
+      /* Status Colors */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-body);
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+      height: 100vh; /* Fixed height for App-like feel */
+      overflow: hidden; /* Disable body scroll to allow Push Animation */
     }
 
-    .navbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px 20px;
-      background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));
-      backdrop-filter:blur(6px);
-      box-shadow:var(--shadow);
-      position:sticky;
-      top:0;
-      z-index:40;
+    /* --- NAVBAR --- */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 30px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 40;
       flex-shrink: 0;
     }
-    .left-section{display:flex;align-items:center;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{width:36px;height:36px;border-radius:8px;background:var(--accent);display:inline-grid;place-items:center;color:white;font-weight:700}
-    .brand h1{font-size:16px;margin:0}
-    .nav-links{display:flex;gap:18px;align-items:center}
-    .nav-links a{color:var(--muted);text-decoration:none;font-weight:600}
-    .nav-links a:hover{color:var(--accent)}
-    .actions{display:flex;gap:12px;align-items:center}
-    .btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}
-    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
-    .btn.primary{background:var(--accent);color:white;border:none}
-    .btn.danger { background: var(--danger); color: white; border: none }
 
+    .left-section { display: flex; align-items: center; gap: 15px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--brand-gradient);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      margin: 0;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    
+    .brand-text div { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+    .nav-links { display: flex; gap: 30px; align-items: center; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--secondary-color); }
+    #dash { color: var(--secondary-color); font-weight: 600; }
+
+    .actions { display: flex; gap: 15px; align-items: center; }
+
+    /* --- HAMBURGER MENU (Original Animation) --- */
     .hamburger {
       border: 0;
       background: none;
       cursor: pointer;
       padding: 8px;
       border-radius: 8px;
-      display: inline-flex;
+      display: flex; /* Always visible as requested */
       flex-direction: column;
       justify-content: center;
-      gap: 6px; 
+      gap: 6px;
     }
     .hamburger .line {
-      width: 22px;
+      width: 24px;
       height: 2px;
-      background: #111827;
+      background: var(--text-main);
       transition: transform 0.2s ease, opacity 0.2s ease;
-      backface-visibility: hidden;
+      border-radius: 2px;
     }
-    .hamburger.open .line:nth-child(1){transform:translateY(5px) rotate(45deg)}
-    .hamburger.open .line:nth-child(2){opacity:0}
-    .hamburger.open .line:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+    /* The 'X' Animation */
+    .hamburger.open .line:nth-child(1){ transform: translateY(8px) rotate(45deg); }
+    .hamburger.open .line:nth-child(2){ opacity: 0; }
+    .hamburger.open .line:nth-child(3){ transform: translateY(-8px) rotate(-45deg); }
 
-    .mobile-menu{
-      display: flex; 
-      flex-direction: column;
+    /* --- BUTTONS --- */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-family: var(--font-heading);
+      display: flex;
+      align-items: center;
       gap: 8px;
-      padding: 28px 20px;
-      position: fixed;
-      top: 60px;
-      left: 0;
-      height: calc(100% - 60px); 
-      width: 280px;  
-      background: var(--card);
-      z-index: 50;
-      box-shadow: var(--shadow);
-      transform: translateX(-280px); 
-      transition: transform 0.3s ease-in-out;
     }
-    .mobile-menu.open {
-      transform: translateX(0);
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    
+    .btn.primary {
+      background: var(--brand-gradient);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 15px rgba(255, 94, 98, 0.25);
     }
-    .mobile-menu a{padding:8px 0;color:var(--muted);text-decoration:none}
+    
+    .btn.danger { background: #fee2e2; color: #ef4444; border: none; }
+    .btn.danger:hover { background: #fecaca; }
 
-    /* --- FIX: Added overflow-y: auto to the container --- */
-    .container{
-      max-width:1200px;
-      margin:0 auto;
-      padding:20px;
-      height:100%;
-      overflow-y:auto; /* This enables scrolling */
-    }
-
-    .card-image {
-      max-width: 100%; 
-      height: auto;
-      display: block;
-      border-radius: 6px; 
-    }
-
-    #dash {
-      font-size: large;
-      color: rgb(153, 30, 30);
-    }
-
+    /* --- LAYOUT & PUSH ANIMATION --- */
     #main-body {
       flex-grow: 1;
       position: relative;
-      overflow: hidden; /* This MUST be hidden */
-      transition: margin-left 0.3s ease-in-out;
+      overflow: hidden;
+      display: flex;
+      transition: margin-left 0.3s ease-in-out; /* THE PUSH ANIMATION */
     }
+    
     #main-body.pushed {
-      margin-left: 280px;
+      margin-left: 280px; /* Push content to the right */
     }
 
-    /* Dashboard Specific Styles */
-    .dashboard-header{
-      margin-bottom:24px;
+    .mobile-menu {
+      position: fixed;
+      top: 73px; /* Height of Navbar */
+      left: 0;
+      height: calc(100% - 73px);
+      width: 280px;
+      background: white;
+      z-index: 50;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      
+      /* Hide by default */
+      transform: translateX(-280px);
+      transition: transform 0.3s ease-in-out;
     }
-    .dashboard-header h2{
-      margin:0 0 8px 0;
-      font-size:28px;
-    }
-    .dashboard-header p{
-      margin:0;
-      color:var(--muted);
-    }
-
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:16px;
-      margin-bottom:24px;
-    }
-    .stat-card{
-      background:var(--card);
-      padding:24px;
-      border-radius:12px;
-      box-shadow:var(--shadow);
-      transition:transform .2s;
-    }
-    .stat-card:hover{
-      transform:translateY(-2px);
-      box-shadow:0 8px 24px rgba(17,24,39,0.12);
-    }
-    .stat-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      margin-bottom:12px;
-    }
-    .stat-icon{
-      width:40px;
-      height:40px;
-      border-radius:10px;
-      display:grid;
-      place-items:center;
-      font-size:20px;
-    }
-    .stat-icon.blue{background:#dbeafe;color:#1e40af}
-    .stat-icon.red{background:#fee2e2;color:#991b1b}
-    .stat-icon.green{background:#d1fae5;color:#065f46}
-    .stat-icon.orange{background:#fed7aa;color:#92400e}
-    .stat-info h4{
-      margin:0 0 4px 0;
-      font-size:13px;
-      color:var(--muted);
-      font-weight:500;
-    }
-    .stat-value{
-      font-size:32px;
-      font-weight:700;
-      margin:0 0 8px 0;
-    }
-    .stat-change{
-      font-size:13px;
-      font-weight:600;
-    }
-    .stat-change.positive{color:var(--success)}
-    .stat-change.negative{color:var(--danger)}
-
-    .charts-grid{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:20px;
-      margin-bottom:24px;
-    }
-    .chart-card{
-      background:var(--card);
-      padding:24px;
-      border-radius:12px;
-      box-shadow:var(--shadow);
-    }
-    .chart-card h3{
-      margin:0 0 20px 0;
-      font-size:18px;
-      font-weight:600;
-    }
-    .chart-container{
-      height:300px;
-      position:relative;
-    }
-    canvas{
-      max-width:100%;
-      max-height:100%;
+    
+    .mobile-menu.open {
+      transform: translateX(0); /* Slide in */
     }
 
-    .recent-section{
-      background:var(--card);
-      padding:24px;
-      border-radius:12px;
-      box-shadow:var(--shadow);
-      margin-bottom:20px;
+    .mobile-menu a { 
+        padding: 12px 15px; text-decoration: none; color: var(--text-main); 
+        border-radius: 8px; font-weight: 500; font-size: 14px;
+        display: flex; align-items: center; gap: 10px;
     }
-    .recent-section h3{
-      margin:0 0 16px 0;
-      font-size:18px;
-      font-weight:600;
-    }
-    .recent-table{
-      width:100%;
-      border-collapse:collapse;
-    }
-    .recent-table th{
-      text-align:left;
-      padding:12px 8px;
-      font-size:12px;
-      font-weight:600;
-      color:var(--muted);
-      text-transform:uppercase;
-      border-bottom:2px solid #f3f4f6;
-    }
-    .recent-table td{
-      padding:14px 8px;
-      border-bottom:1px solid #f9fafb;
-      font-size:14px;
-    }
-    .recent-table th.right, .recent-table td.right {
-      text-align: right;
-    }
-    .recent-table tbody tr:hover{
-      background:#f9fafb;
+    .mobile-menu a:hover { background: #fff1f2; color: var(--secondary-color); }
+
+    /* --- MAIN CONTAINER (Scrollable) --- */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+      width: 100%;
+      height: 100%;      /* Fill the main-body */
+      overflow-y: auto;  /* SCROLL HAPPENS HERE */
     }
 
-    .status-badge{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:12px;
-      font-size:11px;
-      font-weight:600;
-    }
-    .status-badge.low{background:#fee2e2;color:#991b1b}
-    .status-badge.medium{background:#fed7aa;color:#92400e}
-    .status-badge.high{background:#d1fae5;color:#065f46}
-    .status-badge.Paid{background:#d1fae5;color:#065f46}
-    .status-badge.Pending{background:#fed7aa;color:#92400e}
+    .dashboard-header { margin-bottom: 30px; }
+    .dashboard-header h2 { font-family: var(--font-heading); font-size: 26px; font-weight: 700; margin: 0 0 5px 0; color: #111827; }
+    .dashboard-header p { color: var(--text-muted); margin: 0; font-size: 15px; }
 
-    @media (max-width:900px){
-      .charts-grid{grid-template-columns:1fr}
-      .stats-grid{grid-template-columns:repeat(2,1fr)}
+    /* --- STATS CARDS --- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
     }
-    @media (max-width:720px){
-      .nav-links{display:none}
-      .actions{display:none}
-      .stats-grid{grid-template-columns:1fr}
-      .recent-section{overflow-x:auto}
-      .recent-table{min-width:600px}
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+    
+    .stat-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-size: 20px;
+    }
+    .stat-icon.blue { background: #eff6ff; color: var(--info); }
+    .stat-icon.red { background: #fef2f2; color: var(--danger); }
+    .stat-icon.green { background: #ecfdf5; color: var(--success); }
+    .stat-icon.orange { background: #fff7ed; color: var(--warning); }
+
+    .stat-info h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 32px; font-weight: 700; margin: 0 0 8px 0; font-family: var(--font-heading); color: #111827; }
+    
+    .stat-change { 
+        font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; 
+        padding: 4px 10px; border-radius: 20px;
+    }
+    .stat-change.positive { background: #ecfdf5; color: var(--success); }
+    .stat-change.negative { background: #fef2f2; color: var(--danger); }
+
+    /* --- CHARTS & TABLES --- */
+    .charts-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;
+    }
+
+    .chart-card, .recent-section {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .chart-card h3, .recent-section h3 {
+      margin: 0 0 20px 0; font-size: 18px; font-weight: 700; font-family: var(--font-heading);
+      display: flex; align-items: center; gap: 10px; color: #111827;
+    }
+    
+    .chart-container { height: 300px; position: relative; }
+
+    /* Tables */
+    .recent-table { width: 100%; border-collapse: collapse; }
+    .recent-table th {
+      text-align: left; padding: 15px 10px; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 2px solid #f3f4f6;
+    }
+    .recent-table td {
+      padding: 16px 10px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; font-weight: 500;
+    }
+    .recent-table tr:last-child td { border-bottom: none; }
+    .recent-table tbody tr:hover { background: #f9fafb; }
+    .recent-table td.right, .recent-table th.right { text-align: right; }
+
+    .status-badge {
+      padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize;
+    }
+    .status-badge.Paid, .status-badge.high, .status-badge.Medium { background: #ecfdf5; color: #059669; }
+    .status-badge.Pending, .status-badge.medium { background: #fff7ed; color: #d97706; }
+    .status-badge.low, .status-badge.Unpaid, .status-badge.Critical { background: #fef2f2; color: #dc2626; }
+
+    /* Responsive */
+    @media (max-width: 1024px) { .charts-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .nav-links, .actions { display: none; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .recent-section { overflow-x: auto; }
+      .recent-table { min-width: 600px; }
     }
   </style>
 </head>
@@ -292,61 +312,61 @@
         <span class="line"></span>
         <span class="line"></span>
       </button>
+      
       <div class="brand">
-        <div class="logo">
-            <img class="card-image" src="assets/icons/logo.png" alt="Fasco Logo">
+        <div class="logo-icon">
+          <i class="fas fa-fire-extinguisher"></i>
         </div>
-        <div>
-          <h1>Fasco</h1>
-          <div style="font-size:12px;color:var(--muted)">Inventory & Billing</div>
+        <div class="brand-text">
+          <h1>FASCO</h1>
+          <div>Inventory System</div>
         </div>
       </div>
     </div>
 
-    <nav class="nav-links" aria-label="Primary">
-      <a id="dash" href="home.html">Dashboard</a>
-      <a id="inv" href="inventory.html">Inventory</a>
-      <a id="sales" href="sales.html">Checkout</a>
+    <nav class="nav-links">
+      <a id="dash" href="home.html" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a id="inv" href="inventory.html"><i class="fas fa-box"></i> Inventory</a>
+      <a id="sales" href="sales.html"><i class="fas fa-cash-register"></i> Checkout</a>
+      <a href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
     </nav>
 
-    <!-- NAVBAR CLEANUP -->
     <div class="actions">
-      <button class="btn">Profile</button>
-      <button class="btn primary" onclick="window.location.href='sales.html'">New Invoice</button>
-      <button class="btn danger" id="logoutBtn">Log Out</button>
+      <button class="btn" onclick="window.location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
+      <button class="btn primary" onclick="window.location.href='sales.html'"><i class="fas fa-plus"></i> New Invoice</button>
+      <button class="btn danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
     </div>
   </header>
 
   <div id="main-body">
+    
     <div id="mobileMenu" class="mobile-menu">
-      <a href="home.html">Dashboard</a>
-      <a href="inventory.html">Inventory</a>
-      <a href="sales.html">Checkout</a>
-      <a href="orders.html">Orders</a>
-      <a href="users.html">Users</a>
-      <a href="customers.html">Customers</a>
-      <a href="suppliers.html">Suppliers</a>
-      <a href="reports.html">Reports</a>
-      <a href="settings.html">Settings</a>
+      <a href="home.html" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="inventory.html"><i class="fas fa-box"></i> Inventory</a>
+      <a href="sales.html"><i class="fas fa-cash-register"></i> Checkout</a>
+      <a href="orders.html"><i class="fas fa-receipt"></i> Orders</a>
+      <a href="customers.html"><i class="fas fa-users"></i> Customers</a>
+      <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+      <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 10px;">
+        <a href="#" id="mobileLogout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+      </div>
     </div>
 
-    <!-- Container class now handles scrolling -->
     <div class="container">
       <div class="dashboard-header">
-        <h2>Dashboard Overview</h2>
-        <p>Real-time insights into your business performance</p>
+        <h2>Overview</h2>
+        <p>Welcome back! Here's what's happening with your inventory today.</p>
       </div>
 
-      <!-- Stats Cards -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-info">
               <h4>Total Products</h4>
               <p class="stat-value" id="totalProducts">0</p>
-              <span class="stat-change positive" id="productsChange">Loading...</span>
+              <span class="stat-change positive" id="productsChange"><i class="fas fa-box"></i> In Stock</span>
             </div>
-            <div class="stat-icon blue">📦</div>
+            <div class="stat-icon blue"><i class="fas fa-box-open"></i></div>
           </div>
         </div>
 
@@ -355,9 +375,9 @@
             <div class="stat-info">
               <h4>Low Stock Alert</h4>
               <p class="stat-value" id="lowStockCount">0</p>
-              <span class="stat-change negative" id="lowStockText">Items need restock</span>
+              <span class="stat-change negative" id="lowStockText"><i class="fas fa-exclamation-triangle"></i> Check Inventory</span>
             </div>
-            <div class="stat-icon red">⚠️</div>
+            <div class="stat-icon red"><i class="fas fa-sort-amount-down"></i></div>
           </div>
         </div>
 
@@ -366,9 +386,9 @@
             <div class="stat-info">
               <h4>Total Orders</h4>
               <p class="stat-value" id="totalOrders">0</p>
-              <span class="stat-change positive" id="ordersChange">Loading...</span>
+              <span class="stat-change positive" id="ordersChange"><i class="fas fa-arrow-up"></i> All time</span>
             </div>
-            <div class="stat-icon green">🛒</div>
+            <div class="stat-icon green"><i class="fas fa-shopping-cart"></i></div>
           </div>
         </div>
 
@@ -376,49 +396,46 @@
           <div class="stat-header">
             <div class="stat-info">
               <h4>Revenue (Today)</h4>
-              <!-- KUWAITI CHANGE -->
               <p class="stat-value" id="todayRevenue">KD 0.000</p>
-              <span class="stat-change positive" id="revenueChange">Loading...</span>
+              <span class="stat-change positive" id="revenueChange"><i class="fas fa-coins"></i> Today's Sales</span>
             </div>
-            <div class="stat-icon orange">💰</div>
+            <div class="stat-icon orange"><i class="fas fa-wallet"></i></div>
           </div>
         </div>
       </div>
 
-      <!-- Charts -->
       <div class="charts-grid">
         <div class="chart-card">
-          <h3>Inventory by Category</h3>
+          <h3><i class="fas fa-chart-pie" style="color: var(--info);"></i> Inventory by Category</h3>
           <div class="chart-container">
             <canvas id="categoryChart"></canvas>
           </div>
         </div>
 
         <div class="chart-card">
-          <h3>Sales Trend (Last 7 Days)</h3>
+          <h3><i class="fas fa-chart-line" style="color: var(--secondary-color);"></i> Sales Trend (7 Days)</h3>
           <div class="chart-container">
             <canvas id="salesTrendChart"></canvas>
           </div>
         </div>
 
         <div class="chart-card">
-          <h3>Stock Status Distribution</h3>
+          <h3><i class="fas fa-battery-half" style="color: var(--danger);"></i> Stock Health</h3>
           <div class="chart-container">
             <canvas id="stockStatusChart"></canvas>
           </div>
         </div>
 
         <div class="chart-card">
-          <h3>Top Selling Products</h3>
+          <h3><i class="fas fa-trophy" style="color: var(--warning);"></i> Top Value Products</h3>
           <div class="chart-container">
             <canvas id="topProductsChart"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- Recent Orders -->
       <div class="recent-section">
-        <h3>Recent Orders</h3>
+        <h3><i class="fas fa-clock" style="color: var(--text-muted);"></i> Recent Orders</h3>
         <table class="recent-table">
           <thead>
             <tr>
@@ -431,27 +448,26 @@
             </tr>
           </thead>
           <tbody id="recentOrdersBody">
-            <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Loading orders...</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)"><i class="fas fa-spinner fa-spin"></i> Loading orders...</td></tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Low Stock Items -->
       <div class="recent-section">
-        <h3>Low Stock Items</h3>
+        <h3><i class="fas fa-exclamation-circle" style="color: var(--danger);"></i> Low Stock Items</h3>
         <table class="recent-table">
           <thead>
             <tr>
-              <th>Product Code</th>
+              <th>Code</th>
               <th>Product Name</th>
               <th>Category</th>
-              <th>Current Stock</th>
-              <th>Min Stock</th>
-              <th>Priority</th>
+              <th>Stock</th>
+              <th>Min</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody id="lowStockBody">
-            <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Loading stock data...</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)"><i class="fas fa-spinner fa-spin"></i> Loading stock data...</td></tr>
           </tbody>
         </table>
       </div>
@@ -488,14 +504,13 @@
 
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-        // KUWAITI CHANGE: Update error message
-        document.getElementById('recentOrdersBody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:red;">Error loading data. Is the backend server running?</td></tr>`;
+        document.getElementById('recentOrdersBody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:red;">Error connecting to server.</td></tr>`;
         document.getElementById('lowStockBody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:red;">Error loading data.</td></tr>`;
       }
     }
 
     function updateDashboard(data) {
-      const { products, orders } = data; // Destructure the data
+      const { products, orders } = data;
       updateStats(products, orders);
       renderCharts(products, orders);
       renderRecentOrders(orders);
@@ -505,29 +520,31 @@
     function updateStats(products, orders) {
       // Total Products
       document.getElementById('totalProducts').textContent = products.length;
-      document.getElementById('productsChange').textContent = `${products.length} items in stock`;
+      document.getElementById('productsChange').innerHTML = `<i class="fas fa-box"></i> In Stock`;
       
       // Low Stock
       const lowStock = products.filter(p => p.stock <= p.min_stock && p.stock > 0).length;
       document.getElementById('lowStockCount').textContent = lowStock;
-      document.getElementById('lowStockText').textContent = `${lowStock} items need restock`;
+      
+      // GRAMMAR FIX HERE
+      const itemText = lowStock === 1 ? 'Item' : 'Items';
+      document.getElementById('lowStockText').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${lowStock} ${itemText} Low`;
       
       // Total Orders
       document.getElementById('totalOrders').textContent = orders.length;
-      document.getElementById('ordersChange').textContent = `${orders.length} orders total`;
+      document.getElementById('ordersChange').innerHTML = `<i class="fas fa-arrow-up"></i> All time`;
       
       // Today's Revenue
       const today = new Date().toISOString().split('T')[0];
       const todayOrders = orders.filter(o => o.order_date.startsWith(today));
       const todayRevenue = todayOrders.reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
       
-      // KUWAITI CHANGE: Use 'en-KW' for Dinar formatting (3 decimal places)
       document.getElementById('todayRevenue').textContent = 'KD ' + todayRevenue.toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-      document.getElementById('revenueChange').textContent = `${todayOrders.length} orders today`;
+      document.getElementById('revenueChange').innerHTML = `<i class="fas fa-clock"></i> ${todayOrders.length} orders today`;
     }
 
     function renderCharts(products, orders) {
-      // 1. Category Distribution
+      // 1. Category Distribution (Doughnut)
       const categoryData = {};
       products.forEach(p => {
         categoryData[p.category] = (categoryData[p.category] || 0) + p.stock;
@@ -540,19 +557,19 @@
           labels: Object.keys(categoryData),
           datasets: [{
             data: Object.values(categoryData),
-            backgroundColor: ['#1f6feb', '#10b981', '#f59e0b', '#dc2626', '#8b5cf6', '#06b6d4']
+            backgroundColor: ['#4A00E0', '#ff5e62', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'],
+            borderWidth: 0
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
+          plugins: { legend: { position: 'right', labels: { font: { family: 'Inter', size: 11 } } } },
+          cutout: '70%'
         }
       });
 
-      // 2. Sales Trend (Last 7 Days)
+      // 2. Sales Trend (Line Chart)
       const last7Days = [];
       const salesByDay = {};
       for (let i = 6; i >= 0; i--) {
@@ -576,27 +593,29 @@
         data: {
           labels: last7Days.map(d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})),
           datasets: [{
-            label: 'Revenue (KD)', // KUWAITI CHANGE
+            label: 'Revenue (KD)',
             data: last7Days.map(d => salesByDay[d]),
-            borderColor: '#1f6feb',
-            backgroundColor: 'rgba(31, 111, 235, 0.1)',
+            borderColor: '#ff5e62', // Secondary Color
+            backgroundColor: 'rgba(255, 94, 98, 0.1)',
             tension: 0.4,
-            fill: true
+            fill: true,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#ff5e62',
+            pointRadius: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            y: { beginAtZero: true }
+            y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+            x: { grid: { display: false } }
           }
         }
       });
 
-      // 3. Stock Status
+      // 3. Stock Status (Pie)
       const inStock = products.filter(p => p.stock > p.min_stock).length;
       const lowStockCount = products.filter(p => p.stock <= p.min_stock && p.stock > 0).length;
       const outStock = products.filter(p => p.stock === 0).length;
@@ -608,19 +627,18 @@
           labels: ['In Stock', 'Low Stock', 'Out of Stock'],
           datasets: [{
             data: [inStock, lowStockCount, outStock],
-            backgroundColor: ['#10b981', '#f59e0b', '#dc2626']
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+            borderWidth: 0
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
+          plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }
         }
       });
 
-      // 4. Top Products (based on stock value)
+      // 4. Top Products (Bar)
       const topProducts = [...products]
         .sort((a, b) => (b.stock * b.price) - (a.stock * a.price))
         .slice(0, 5)
@@ -630,33 +648,30 @@
       charts.topProducts = new Chart(document.getElementById('topProductsChart'), {
         type: 'bar',
         data: {
-          labels: topProducts.map(p => p.name.substring(0, 20)),
+          labels: topProducts.map(p => p.name.substring(0, 15) + '...'),
           datasets: [{
-            label: 'Stock Value (KD)', // KUWAITI CHANGE
+            label: 'Stock Value (KD)',
             data: topProducts.map(p => p.stock * p.price),
-            backgroundColor: '#1f6feb'
+            backgroundColor: '#4A00E0', // Primary Color
+            borderRadius: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           indexAxis: 'y',
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            x: { beginAtZero: true }
-          }
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, grid: { display: false } }, y: { grid: { display: false } } }
         }
       });
     }
 
     function renderRecentOrders(orders) {
       const tbody = document.getElementById('recentOrdersBody');
-      const recentOrders = [...orders].slice(0, 5); // Already sorted by backend
+      const recentOrders = [...orders].slice(0, 5);
 
       if (recentOrders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">No orders yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No orders yet</td></tr>';
         return;
       }
 
@@ -664,10 +679,8 @@
         <tr>
           <td><strong>#${order.id}</strong></td>
           <td>${order.customer_name || 'Guest'}</td>
-          <!-- KUWAITI CHANGE -->
           <td>${new Date(order.order_date).toLocaleDateString('en-KW')}</td>
           <td>${order.item_count || '-'} items</td>
-          <!-- KUWAITI CHANGE -->
           <td class="right"><strong>KD ${parseFloat(order.total_amount).toLocaleString('en-KW', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</strong></td>
           <td><span class="status-badge ${order.payment_status || 'Pending'}">${order.payment_status || 'Pending'}</span></td>
         </tr>
@@ -682,7 +695,7 @@
         .slice(0, 5);
 
       if (lowStockItems.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">All items are well stocked!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--success)"><i class="fas fa-check-circle"></i> All items are well stocked!</td></tr>';
         return;
       }
 
@@ -698,13 +711,13 @@
             <td>${item.category}</td>
             <td>${item.stock}</td>
             <td>${item.min_stock}</td>
-            <td><span class="status-badge ${priority}">${priorityText}</span></td>
+            <td><span class="status-badge ${priorityText}">${priorityText}</span></td>
           </tr>
         `;
       }).join('');
     }
 
-    // Mobile Menu
+    // Mobile Menu Logic
     const btn = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const mainBody = document.getElementById('main-body');
@@ -719,7 +732,7 @@
     btn.addEventListener('click', toggleMenu);
 
     window.addEventListener('resize', ()=>{
-      if(window.innerWidth > 720){
+      if(window.innerWidth > 768){
         mobileMenu.classList.remove('open');
         btn.classList.remove('open');
         btn.setAttribute('aria-expanded','false');
@@ -727,11 +740,14 @@
       }
     });
     
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
+    // Logout logic
+    function logout() {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
-    });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    if(document.getElementById('mobileLogout')) document.getElementById('mobileLogout').addEventListener('click', logout);
 
     // Initialize
     document.addEventListener('DOMContentLoaded', fetchDashboardData);

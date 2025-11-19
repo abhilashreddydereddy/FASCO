@@ -80,6 +80,7 @@
       font-family: var(--font-heading);
       font-size: 22px;
       margin: 0;
+      /* UPDATED: Logo is now Orange/Red Gradient */
       background: var(--brand-gradient);
       -webkit-background-clip: text;
       background-clip: text;
@@ -106,14 +107,14 @@
 
     .actions { display: flex; gap: 15px; align-items: center; }
 
-    /* --- HAMBURGER MENU (Original Animation) --- */
+    /* --- HAMBURGER MENU --- */
     .hamburger {
       border: 0;
       background: none;
       cursor: pointer;
       padding: 8px;
       border-radius: 8px;
-      display: flex; /* Always visible as requested */
+      display: flex; /* Always visible */
       flex-direction: column;
       justify-content: center;
       gap: 6px;
@@ -125,7 +126,6 @@
       transition: transform 0.2s ease, opacity 0.2s ease;
       border-radius: 2px;
     }
-    /* The 'X' Animation */
     .hamburger.open .line:nth-child(1){ transform: translateY(8px) rotate(45deg); }
     .hamburger.open .line:nth-child(2){ opacity: 0; }
     .hamburger.open .line:nth-child(3){ transform: translateY(-8px) rotate(-45deg); }
@@ -170,6 +170,7 @@
       margin-left: 280px; /* Push content to the right */
     }
 
+    /* UPDATED: Full Sidebar Menu */
     .mobile-menu {
       position: fixed;
       top: 73px; /* Height of Navbar */
@@ -183,6 +184,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow-y: auto; /* Scroll inside menu if needed */
       
       /* Hide by default */
       transform: translateX(-280px);
@@ -196,9 +198,11 @@
     .mobile-menu a { 
         padding: 12px 15px; text-decoration: none; color: var(--text-main); 
         border-radius: 8px; font-weight: 500; font-size: 14px;
-        display: flex; align-items: center; gap: 10px;
+        display: flex; align-items: center; gap: 12px;
     }
     .mobile-menu a:hover { background: #fff1f2; color: var(--secondary-color); }
+    
+    .mobile-menu a.active { background: #fff1f2; color: var(--secondary-color); font-weight: 600; }
 
     /* --- MAIN CONTAINER (Scrollable) --- */
     .container {
@@ -345,8 +349,11 @@
       <a href="inventory.html"><i class="fas fa-box"></i> Inventory</a>
       <a href="sales.html"><i class="fas fa-cash-register"></i> Checkout</a>
       <a href="orders.html"><i class="fas fa-receipt"></i> Orders</a>
-      <a href="customers.html"><i class="fas fa-users"></i> Customers</a>
+      <a href="users.html"><i class="fas fa-users"></i> Users</a>
+      <a href="customers.html"><i class="fas fa-user-friends"></i> Customers</a>
+      <a href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a>
       <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+      <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
       <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 10px;">
         <a href="#" id="mobileLogout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
       </div>

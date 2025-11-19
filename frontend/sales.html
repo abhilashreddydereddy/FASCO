@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fasco — Sales & Billing</title>
+  <title>Fasco – Sales & Billing</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -42,7 +42,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
-      overflow: hidden; /* Layout manages scroll */
+      overflow: hidden;
     }
 
     /* --- NAVBAR --- */
@@ -143,7 +143,7 @@
 
     .sales-layout {
       display: grid; grid-template-columns: 1fr 400px; gap: 20px;
-      height: calc(100vh - 110px); /* Fit screen height */
+      height: calc(100vh - 110px);
     }
 
     /* Left: Product Section */
@@ -295,7 +295,7 @@
     /* Responsive */
     @media (max-width: 1024px) {
       .sales-layout { grid-template-columns: 1fr; height: auto; overflow-y: visible; }
-      .product-section { height: 600px; } /* Give it height on tablet */
+      .product-section { height: 600px; }
       .cart-section { height: auto; }
     }
     @media (max-width: 768px) {
@@ -488,8 +488,10 @@
 
       <div class="modal-actions">
         <button class="btn" onclick="closeInvoice()">Close</button>
+        <button class="btn success" id="downloadBtn"><i class="fas fa-download"></i> Download PDF</button>
         <button class="btn primary" onclick="printInvoice()"><i class="fas fa-print"></i> Print Invoice</button>
       </div>
+
     </div>
   </div>
 
@@ -715,7 +717,43 @@
       document.getElementById('invCustomerName').textContent = customer.name;
       document.getElementById('invCustomerPhone').textContent = customer.phone || 'N/A';
       document.getElementById('invPaymentMethod').textContent = invoice.payment_method;
-      
+
+      // Setup Download PDF button
+      const downloadBtn = document.getElementById("downloadBtn");
+      downloadBtn.onclick = async () => {
+        try {
+          downloadBtn.disabled = true;
+          downloadBtn.textContent = 'Preparing...';
+
+          const res = await fetch(`http://localhost:5000/api/orders/${invoice.order_id}/download`, {
+            method: 'GET',
+            headers: { 'x-auth-token': token }
+          });
+
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Server error: ${res.status} ${txt}`);
+          }
+
+          const blob = await res.blob();
+          const filename = (invoice.invoice_number || `invoice-${invoice.order_id}`).replace(/\s+/g, '_') + '.pdf';
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('Download failed: ' + err.message);
+          console.error(err);
+        } finally {
+          downloadBtn.disabled = false;
+          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+        }
+      };
+
       const invoiceItemsBody = document.getElementById('invoiceItems');
       invoiceItemsBody.innerHTML = cart.map((item, index) => `
         <tr>
@@ -735,13 +773,27 @@
     }
 
     function closeInvoice() {
-      document.getElementById('invoiceModal').classList.remove('show');
+      const modal = document.getElementById('invoiceModal');
+      modal.classList.remove('show');
       clearCart(false);
       renderProducts();
     }
 
-    function printInvoice() {
-      window.print();
+    async function printInvoice() {
+      const invoiceNumber = document.getElementById('invoiceNumber').textContent;
+      const orderId = invoiceNumber.split("-").pop();
+
+      const res = await fetch(`http://localhost:5000/api/orders/${orderId}/download`, {
+        headers: { "x-auth-token": token }
+      });
+
+      const blob = await res.blob();
+      const pdfURL = URL.createObjectURL(blob);
+
+      const printWindow = window.open(pdfURL);
+      printWindow.onload = function() {
+        printWindow.print();
+      };
     }
 
     // --- Mobile Menu & Logout ---
@@ -756,6 +808,11 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    });
+
+    document.getElementById('mobileLogout').addEventListener('click', () => {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
     });

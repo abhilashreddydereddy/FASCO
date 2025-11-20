@@ -64,10 +64,21 @@
     .brand { display: flex; align-items: center; gap: 12px; }
     
     .logo-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: var(--brand-gradient); color: white;
-      display: grid; place-items: center; font-size: 18px;
-      box-shadow: 0 4px 10px rgba(255, 94, 98, 0.3);
+      width: 48px;         /* larger space */
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none !important; /* remove gradient */
+      border-radius: 8px;  /* optional rounding */
+      overflow: visible !important; /* prevent clipping */
+    }
+
+    .logo-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      image-rendering: auto;
     }
 
     .brand-text h1 {
@@ -196,7 +207,7 @@
       
       <div class="brand">
         <div class="logo-icon">
-          <i class="fas fa-fire-extinguisher"></i>
+          <img src="assets/icons/logo.png" alt="FASCO Logo" class="logo-img">
         </div>
         <div class="brand-text">
           <h1>FASCO</h1>
